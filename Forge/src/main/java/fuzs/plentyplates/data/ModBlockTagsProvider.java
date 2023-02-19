@@ -1,6 +1,6 @@
 package fuzs.plentyplates.data;
 
-import fuzs.plentyplates.init.ModRegistry;
+import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.BlockTags;
@@ -15,7 +15,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags() {
-        this.tag(BlockTags.STONE_PRESSURE_PLATES).add(ModRegistry.PRESSURE_PLATE_BLOCK.get());
-        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModRegistry.PRESSURE_PLATE_BLOCK.get());
+        this.tag(BlockTags.STONE_PRESSURE_PLATES).add(SensitivityMaterial.allBlocks());
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(SensitivityMaterial.allBlocks());
     }
 }

@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_nether_bricks": {
+    "has_deepslate": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:nether_bricks"
+              "minecraft:deepslate"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "plentyplates:pressure_plate"
+        "recipe": "plentyplates:deepslate_pressure_plate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_nether_bricks",
+      "has_deepslate",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "plentyplates:pressure_plate"
+      "plentyplates:deepslate_pressure_plate"
     ]
   }
 }

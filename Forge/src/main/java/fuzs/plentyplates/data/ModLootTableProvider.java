@@ -2,7 +2,7 @@ package fuzs.plentyplates.data;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import fuzs.plentyplates.init.ModRegistry;
+import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
@@ -44,7 +44,9 @@ public class ModLootTableProvider extends LootTableProvider {
 
         @Override
         protected void addTables() {
-            this.dropSelf(ModRegistry.PRESSURE_PLATE_BLOCK.get());
+            for (Block block : SensitivityMaterial.allBlocks()) {
+                this.dropSelf(block);
+            }
         }
 
         @Override

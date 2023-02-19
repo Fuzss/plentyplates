@@ -1,9 +1,8 @@
 package fuzs.plentyplates.data;
 
 import com.google.common.base.Preconditions;
-import fuzs.plentyplates.client.PlentyPlatesForgeClient;
-import fuzs.plentyplates.init.ModRegistry;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
+import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import net.minecraft.core.Direction;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -27,8 +26,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        this.pressurePlateBlock((PressurePlateBlock) ModRegistry.PRESSURE_PLATE_BLOCK.get(), PlentyPlatesForgeClient.MODEL_ID2, PlentyPlatesForgeClient.MODEL_ID);
-        this.itemModels().withExistingParent(this.name(ModRegistry.PRESSURE_PLATE_BLOCK.get()), this.extendKey(ModRegistry.PRESSURE_PLATE_BLOCK.get(), ModelProvider.BLOCK_FOLDER));
+        for (SensitivityMaterial material : SensitivityMaterial.values()) {
+            this.pressurePlateBlock((PressurePlateBlock) material.getPressurePlateBlock(), material.getModelTexture(), material.getTranslucentModelTexture());
+            this.itemModels().withExistingParent(this.name(material.getPressurePlateBlock()), this.extendKey(material.getPressurePlateBlock(), ModelProvider.BLOCK_FOLDER));
+        }
     }
 
     private ResourceLocation key(Block block) {

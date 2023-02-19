@@ -1,3 +1,13 @@
 {
-  "block.plentyplates.pressure_plate": "Pressure Plate"
+  "block.plentyplates.calcite_pressure_plate": "Calcite Pressure Plate",
+  "block.plentyplates.calcite_pressure_plate.entities": "Animals",
+  "block.plentyplates.deepslate_pressure_plate": "Deepslate Pressure Plate",
+  "block.plentyplates.deepslate_pressure_plate.entities": "Mobs",
+  "block.plentyplates.obsidian_pressure_plate": "Obsidian Pressure Plate",
+  "block.plentyplates.obsidian_pressure_plate.entities": "Players",
+  "block.plentyplates.pressure_plate.activated_by": "Activated By: %s",
+  "block.plentyplates.smooth_basalt_pressure_plate": "Smooth Basalt Pressure Plate",
+  "block.plentyplates.smooth_basalt_pressure_plate.entities": "Sheep",
+  "block.plentyplates.tuff_pressure_plate": "Tuff Pressure Plate",
+  "block.plentyplates.tuff_pressure_plate.entities": "Villagers"
 }

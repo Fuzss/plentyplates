@@ -2,13 +2,16 @@ package fuzs.plentyplates.world.level.block;
 
 import com.google.common.collect.Maps;
 import fuzs.plentyplates.world.phys.shapes.VoxelUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -121,7 +124,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     protected int getSignalStrength(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         AABB aABB = this.touchAABBs.get(state.getValue(FACING)).move(pos);
-        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.clazz, aABB, EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(this.sensitivityMaterial.filter));
+        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getClazz(), aABB, EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)));
         return !entities.isEmpty() ? 15 : 0;
     }
 
@@ -163,21 +166,8 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         builder.add(WATERLOGGED, FACING, SHROUDED, SILENT, LIT);
     }
 
-    public enum SensitivityMaterial {
-        OBSIDIAN(Blocks.OBSIDIAN, Player.class);
-
-        public final Block block;
-        public final Class<? extends Entity> clazz;
-        public final Predicate<Entity> filter;
-
-        SensitivityMaterial(Block block, Class<? extends Entity> clazz) {
-            this(block, clazz, entity -> true);
-        }
-
-        SensitivityMaterial(Block block, Class<? extends Entity> clazz, Predicate<Entity> filter) {
-            this.block = block;
-            this.clazz = clazz;
-            this.filter = filter;
-        }
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.activated_by", Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD));
     }
 }

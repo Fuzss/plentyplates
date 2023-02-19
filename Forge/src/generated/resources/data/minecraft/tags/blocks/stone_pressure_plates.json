@@ -1,5 +1,9 @@
 {
   "values": [
-    "plentyplates:pressure_plate"
+    "plentyplates:obsidian_pressure_plate",
+    "plentyplates:deepslate_pressure_plate",
+    "plentyplates:calcite_pressure_plate",
+    "plentyplates:tuff_pressure_plate",
+    "plentyplates:smooth_basalt_pressure_plate"
   ]
 }

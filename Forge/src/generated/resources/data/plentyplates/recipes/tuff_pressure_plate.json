@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:tuff"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "item": "plentyplates:tuff_pressure_plate"
+  }
+}

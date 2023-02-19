@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "key": {
     "#": {
-      "item": "minecraft:nether_bricks"
+      "item": "minecraft:calcite"
     }
   },
   "pattern": [
     "##"
   ],
   "result": {
-    "item": "plentyplates:pressure_plate"
+    "item": "plentyplates:calcite_pressure_plate"
   }
 }
