@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pressure_plate_down",
   "textures": {
-    "texture": "minecraft:block/obsidian"
+    "texture": "plentyplates:block/transparent_obsidian"
   }
 }

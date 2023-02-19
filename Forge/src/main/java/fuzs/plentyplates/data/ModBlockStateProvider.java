@@ -27,7 +27,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        this.pressurePlateBlock((PressurePlateBlock) ModRegistry.PRESSURE_PLATE_BLOCK.get(), PlentyPlatesForgeClient.MODEL_ID);
+        this.pressurePlateBlock((PressurePlateBlock) ModRegistry.PRESSURE_PLATE_BLOCK.get(), PlentyPlatesForgeClient.MODEL_ID2, PlentyPlatesForgeClient.MODEL_ID);
         this.itemModels().withExistingParent(this.name(ModRegistry.PRESSURE_PLATE_BLOCK.get()), this.extendKey(ModRegistry.PRESSURE_PLATE_BLOCK.get(), ModelProvider.BLOCK_FOLDER));
     }
 
@@ -50,17 +50,31 @@ public class ModBlockStateProvider extends BlockStateProvider {
         return this.blockModels;
     }
 
-    @Override
-    public void pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate, ModelFile pressurePlateDown) {
+    public void pressurePlateBlock(PressurePlateBlock block, ResourceLocation texture, ResourceLocation transparentTexture) {
+        ModelFile pressurePlate = this.models().pressurePlate(this.name(block), texture);
+        ModelFile pressurePlateDown = this.models().pressurePlateDown(this.name(block) + "_down", texture);
+        ModelFile shroudedPressurePlate = this.models().pressurePlate("shrouded_" + this.name(block), transparentTexture);
+        ModelFile shroudedPressurePlateDown = this.models().pressurePlateDown("shrouded_" + this.name(block) + "_down", transparentTexture);
+        this.pressurePlateBlock(block, pressurePlate, pressurePlateDown, shroudedPressurePlate, shroudedPressurePlateDown);
+    }
+
+    public void pressurePlateBlock(PressurePlateBlock block, ModelFile pressurePlate, ModelFile pressurePlateDown, ModelFile shroudedPressurePlate, ModelFile shroudedPressurePlateDown) {
         this.getVariantBuilder(block).forAllStatesExcept(state -> {
             Direction facing = state.getValue(DirectionalPressurePlateBlock.FACING);
             boolean powered = state.getValue(DirectionalPressurePlateBlock.POWERED);
+            boolean shrouded = state.getValue(DirectionalPressurePlateBlock.SHROUDED);
+            ModelFile modelFile;
+            if (shrouded) {
+                modelFile = powered ? shroudedPressurePlateDown : shroudedPressurePlate;
+            } else {
+                modelFile = powered ? pressurePlateDown : pressurePlate;
+            }
             return ConfiguredModel.builder()
-                    .modelFile(powered ? pressurePlateDown : pressurePlate)
+                    .modelFile(modelFile)
                     .rotationX(facing == Direction.DOWN ? 180 : facing.getAxis().isHorizontal() ? 90 : 0)
                     .rotationY(facing.getAxis().isVertical() ? 0 : (((int) facing.toYRot()) + 180) % 360)
                     .build();
-        }, DirectionalPressurePlateBlock.WATERLOGGED);
+        }, DirectionalPressurePlateBlock.WATERLOGGED, DirectionalPressurePlateBlock.SILENT, DirectionalPressurePlateBlock.LIT);
     }
 
     private static class UncheckedBlockModelProvider extends BlockModelProvider {

@@ -35,6 +35,7 @@ import java.util.function.Predicate;
 @Mod.EventBusSubscriber(modid = PlentyPlates.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class PlentyPlatesForgeClient {
     public static final ResourceLocation MODEL_ID = PlentyPlates.id("block/transparent_obsidian");
+    public static final ResourceLocation MODEL_ID2 = new ResourceLocation("block/obsidian");
     public static final ResourceLocation ID = PlentyPlates.id("textures/block/transparent_obsidian.png");
     public static final ResourceLocation ID2 = new ResourceLocation("textures/block/obsidian.png");
 

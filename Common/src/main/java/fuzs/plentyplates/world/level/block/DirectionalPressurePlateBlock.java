@@ -7,7 +7,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -30,12 +31,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public class DirectionalPressurePlateBlock extends PressurePlateBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final BooleanProperty SHROUDED = BooleanProperty.create("shrouded");
+    public static final BooleanProperty SILENT = BooleanProperty.create("silent");
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
     private static final Vec3[] SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
     private static final Vec3[] PRESSED_SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
     protected static final Vec3[] TOUCH_VECTORS = VoxelUtils.makeVectors(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
@@ -50,12 +55,12 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, TOUCH_VECTORS)).toAabbs().stream().findAny().orElse(TOUCH_AABB);
     }));
 
-    private final Sensitivity sensitivity;
+    private final SensitivityMaterial sensitivityMaterial;
 
-    public DirectionalPressurePlateBlock(Sensitivity sensitivity, Properties properties) {
-        super(sensitivity, properties);
-        this.sensitivity = sensitivity;
-        this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP));
+    public DirectionalPressurePlateBlock(SensitivityMaterial sensitivityMaterial, Properties properties) {
+        super(Sensitivity.EVERYTHING, properties);
+        this.sensitivityMaterial = sensitivityMaterial;
+        this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP).setValue(SHROUDED, false).setValue(SILENT, false).setValue(LIT, false));
     }
 
     @Override
@@ -98,37 +103,26 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     @Override
     protected void playOnSound(LevelAccessor level, BlockPos pos) {
-        level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
+        BlockState state = level.getBlockState(pos);
+        if (!state.getValue(SILENT)) {
+            level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
+        }
     }
 
     @Override
     protected void playOffSound(LevelAccessor level, BlockPos pos) {
-        level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_OFF, SoundSource.BLOCKS, 0.3F, 0.5F);
+        BlockState state = level.getBlockState(pos);
+        if (!state.getValue(SILENT)) {
+            level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_OFF, SoundSource.BLOCKS, 0.3F, 0.5F);
+        }
     }
 
     @Override
     protected int getSignalStrength(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         AABB aABB = this.touchAABBs.get(state.getValue(FACING)).move(pos);
-        List<? extends Entity> list;
-        switch (this.sensitivity) {
-            case EVERYTHING -> list = level.getEntities(null, aABB);
-            case MOBS -> list = level.getEntitiesOfClass(LivingEntity.class, aABB);
-            default -> {
-                return 0;
-            }
-        }
-
-        if (!list.isEmpty()) {
-
-            for (Entity entity : list) {
-                if (!entity.isIgnoringBlockTriggers()) {
-                    return 15;
-                }
-            }
-        }
-
-        return 0;
+        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.clazz, aABB, EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(this.sensitivityMaterial.filter));
+        return !entities.isEmpty() ? 15 : 0;
     }
 
     @Override
@@ -166,6 +160,24 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(WATERLOGGED, FACING);
+        builder.add(WATERLOGGED, FACING, SHROUDED, SILENT, LIT);
+    }
+
+    public enum SensitivityMaterial {
+        OBSIDIAN(Blocks.OBSIDIAN, Player.class);
+
+        public final Block block;
+        public final Class<? extends Entity> clazz;
+        public final Predicate<Entity> filter;
+
+        SensitivityMaterial(Block block, Class<? extends Entity> clazz) {
+            this(block, clazz, entity -> true);
+        }
+
+        SensitivityMaterial(Block block, Class<? extends Entity> clazz, Predicate<Entity> filter) {
+            this.block = block;
+            this.clazz = clazz;
+            this.filter = filter;
+        }
     }
 }
