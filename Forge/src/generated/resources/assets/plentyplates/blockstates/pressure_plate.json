@@ -1,10 +1,56 @@
 {
   "variants": {
-    "powered=false": {
+    "facing=down,powered=false": {
+      "model": "plentyplates:block/pressure_plate",
+      "x": 180
+    },
+    "facing=down,powered=true": {
+      "model": "plentyplates:block/pressure_plate_down",
+      "x": 180
+    },
+    "facing=east,powered=false": {
+      "model": "plentyplates:block/pressure_plate",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,powered=true": {
+      "model": "plentyplates:block/pressure_plate_down",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,powered=false": {
+      "model": "plentyplates:block/pressure_plate",
+      "x": 90
+    },
+    "facing=north,powered=true": {
+      "model": "plentyplates:block/pressure_plate_down",
+      "x": 90
+    },
+    "facing=south,powered=false": {
+      "model": "plentyplates:block/pressure_plate",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,powered=true": {
+      "model": "plentyplates:block/pressure_plate_down",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,powered=false": {
       "model": "plentyplates:block/pressure_plate"
     },
-    "powered=true": {
+    "facing=up,powered=true": {
       "model": "plentyplates:block/pressure_plate_down"
+    },
+    "facing=west,powered=false": {
+      "model": "plentyplates:block/pressure_plate",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,powered=true": {
+      "model": "plentyplates:block/pressure_plate_down",
+      "x": 90,
+      "y": 270
     }
   }
 }
