@@ -23,5 +23,13 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add(SensitivityMaterial.CALCITE.descriptionKey(), "Animals");
         this.add(SensitivityMaterial.TUFF.descriptionKey(), "Villagers");
         this.add(SensitivityMaterial.SMOOTH_BASALT.descriptionKey(), "Sheep");
+        this.add("container.pressure_plate", "Pressure Plate");
+        this.add("gui.pressure_plate.whitelist", "Whitelist");
+        this.add("gui.pressure_plate.blacklist", "Blacklist");
+        this.add("gui.pressure_plate.illuminated", "Illuminated");
+        this.add("gui.pressure_plate.silent", "Silent");
+        this.add("gui.pressure_plate.locked", "Locked");
+        this.add("gui.pressure_plate.shrouded", "Shrouded");
+        this.add("gui.pressure_plate.baby", "Baby");
     }
 }
