@@ -1,6 +1,7 @@
 package fuzs.plentyplates.init;
 
 import fuzs.plentyplates.PlentyPlates;
+import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
@@ -28,6 +29,7 @@ public class ModRegistry {
             REGISTRY.registerBlockWithItem(material.id().getPath(), () -> new DirectionalPressurePlateBlock(material, BlockBehaviour.Properties.copy(material.getMaterialBlock()).noCollission().lightLevel(state -> {
                 return state.getValue(DirectionalPressurePlateBlock.LIT) ? 15 : 0;
             })), CREATIVE_MODE_TAB);
+            REGISTRY.registerMenuTypeSupplier(material.id().getPath(), () -> PressurePlateMenu.create(material));
         }
         PRESSURE_PLATE_BLOCK_ENTITY_TYPE = REGISTRY.registerBlockEntityTypeBuilder("pressure_plate", () -> ModBlockEntityTypeBuilder.of(PressurePlateBlockEntity::new, SensitivityMaterial.allBlocks()));
     }

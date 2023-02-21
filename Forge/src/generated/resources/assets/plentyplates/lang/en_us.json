@@ -9,5 +9,14 @@
   "block.plentyplates.smooth_basalt_pressure_plate": "Smooth Basalt Pressure Plate",
   "block.plentyplates.smooth_basalt_pressure_plate.entities": "Sheep",
   "block.plentyplates.tuff_pressure_plate": "Tuff Pressure Plate",
-  "block.plentyplates.tuff_pressure_plate.entities": "Villagers"
+  "block.plentyplates.tuff_pressure_plate.entities": "Villagers",
+  "container.pressure_plate": "Pressure Plate",
+  "gui.pressure_plate.baby": "Baby",
+  "gui.pressure_plate.blacklist": "Blacklist",
+  "gui.pressure_plate.illuminated": "Illuminated",
+  "gui.pressure_plate.locked": "Locked",
+  "gui.pressure_plate.shrouded": "Shrouded",
+  "gui.pressure_plate.silent": "Silent",
+  "gui.pressure_plate.whitelist": "Whitelist",
+  "itemGroup.plentyplates.main": "Plenty Plates"
 }

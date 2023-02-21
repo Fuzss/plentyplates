@@ -96,7 +96,7 @@ public class TranslucentPackResources implements PackResources {
 
     }
 
-    // overrides a method patched in on Forge
+    // overrides a method patched in by Forge
     public boolean isHidden() {
         return true;
     }

@@ -1,8 +1,8 @@
 package fuzs.plentyplates.world.level.block;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
 import fuzs.plentyplates.PlentyPlates;
+import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.entity.data.ColorDataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.DataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.PlayerDataProvider;
@@ -16,16 +16,18 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static fuzs.plentyplates.world.level.block.PressurePlateSetting.*;
 
 public enum SensitivityMaterial {
-    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, SILENT, SHROUDED, ILLUMINATED),
-    DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED, LOCKED),
+    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, SILENT, SHROUDED, ILLUMINATED, LOCKED),
+    DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED),
     CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED),
     TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, SILENT, SHROUDED, ILLUMINATED, BABY),
     SMOOTH_BASALT("smooth_basalt", Blocks.SMOOTH_BASALT, Sheep.class, new ResourceLocation("block/smooth_basalt"), ColorDataProvider::new, SILENT, SHROUDED, ILLUMINATED);
@@ -36,7 +38,9 @@ public enum SensitivityMaterial {
     private final ResourceLocation texture;
     private final PressurePlateSetting[] settings;
     public final Supplier<DataProvider<?>> dataProvider;
+
     private Block pressurePlateBlock;
+    private MenuType<PressurePlateMenu> menuType;
 
     SensitivityMaterial(String name, Block materialBlock, Class<? extends Entity> clazz, ResourceLocation texture, Supplier<DataProvider<?>> dataProvider, PressurePlateSetting... settings) {
         this.id = PlentyPlates.id(name + "_pressure_plate");
@@ -53,6 +57,15 @@ public enum SensitivityMaterial {
             this.pressurePlateBlock = Registry.BLOCK.get(this.id());
         }
         return this.pressurePlateBlock;
+    }
+
+    @SuppressWarnings("unchecked")
+    public MenuType<PressurePlateMenu> getMenuType() {
+        if (this.menuType == null) {
+            Preconditions.checkArgument(Registry.MENU.containsKey(this.id()));
+            this.menuType = (MenuType<PressurePlateMenu>) Registry.MENU.get(this.id());
+        }
+        return this.menuType;
     }
 
     public ResourceLocation id() {

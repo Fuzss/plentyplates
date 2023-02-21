@@ -1,6 +1,6 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
-import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Sheep;
@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class ColorDataProvider implements DataProvider<DyeColor> {
 
@@ -30,12 +29,12 @@ public class ColorDataProvider implements DataProvider<DyeColor> {
 
     @Override
     public DyeColor fromTag(Tag tag) {
-        return DyeColor.byId(((IntTag) tag).getAsInt());
+        return DyeColor.byId(((ByteTag) tag).getAsByte());
     }
 
     @Override
     public Tag toTag(DyeColor value) {
-        return IntTag.valueOf(value.getId());
+        return ByteTag.valueOf((byte) value.getId());
     }
 
     @Nullable
