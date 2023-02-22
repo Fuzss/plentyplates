@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class PressurePlateBlockEntity extends BlockEntity implements MenuProvider {
@@ -44,7 +43,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
         @Override
         public int getCount() {
-            return PressurePlateSetting.values().length + 1;
+            return PressurePlateSetting.values().length;
         }
     };
 
@@ -52,7 +51,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     private UUID owner;
     private SensitivityMaterial sensitivityMaterial;
     private DataStorage<?> dataStorage;
-    private int settings;
+    private int settings = PressurePlateSetting.DEFAULT_SETTINGS;
 
     public PressurePlateBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ModRegistry.PRESSURE_PLATE_BLOCK_ENTITY_TYPE.get(), blockPos, blockState);
@@ -70,25 +69,19 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
     public void setSettingsValue(int id, int value) {
         this.settings = this.settings & ~(1 << id) | (value & 1) << id;
-        if (id > 0) {
-            this.update(PressurePlateSetting.sortedValues()[id - 1], value == 1);
-        }
+        this.update(PressurePlateSetting.values()[id], value == 1);
     }
 
     public int getSettingsValue(int id) {
         return this.settings >> id & 1;
     }
 
-    public boolean getWhitelistSetting() {
-        return this.getSettingsValue(0) == 1;
-    }
-
     public boolean getSettingsValue(PressurePlateSetting setting) {
-        return this.getSettingsValue(setting.getId() + 1) == 1;
+        return this.getSettingsValue(setting.ordinal()) == 1;
     }
 
     public boolean allowedToAccess(Player player) {
-        if (this.getSettingsValue(PressurePlateSetting.LOCKED) && this.owner != null) {
+        if (!this.getSettingsValue(PressurePlateSetting.LOCKED) && this.owner != null) {
             return this.owner.equals(player.getUUID());
         }
         return true;
@@ -99,8 +92,8 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
             case ILLUMINATED -> {
                 this.level.setBlock(this.worldPosition, this.getBlockState().setValue(DirectionalPressurePlateBlock.LIT, value), 3);
             }
-            case SILENT -> this.level.setBlock(this.worldPosition, this.getBlockState().setValue(DirectionalPressurePlateBlock.SILENT, value), 3);
-            case SHROUDED -> this.level.setBlock(this.worldPosition, this.getBlockState().setValue(DirectionalPressurePlateBlock.SHROUDED, value), 3);
+            case SILENT -> this.level.setBlock(this.worldPosition, this.getBlockState().setValue(DirectionalPressurePlateBlock.SILENT, !value), 3);
+            case SHROUDED -> this.level.setBlock(this.worldPosition, this.getBlockState().setValue(DirectionalPressurePlateBlock.SHROUDED, !value), 3);
         }
     }
 
@@ -110,7 +103,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public boolean permits(Entity entity) {
-        return this.dataStorage.contains(entity) == this.getWhitelistSetting();
+        return this.dataStorage.contains(entity) == this.getSettingsValue(PressurePlateSetting.WHITELIST);
     }
 
     public Collection<String> getAllowedValues() {

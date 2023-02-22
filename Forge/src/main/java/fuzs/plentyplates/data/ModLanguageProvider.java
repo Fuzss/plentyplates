@@ -31,13 +31,18 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add(SensitivityMaterial.TUFF.descriptionKey(), "Villagers");
         this.add(SensitivityMaterial.SMOOTH_BASALT.descriptionKey(), "Sheep");
         this.add("container.pressure_plate", "Pressure Plate");
-        this.add("gui.pressure_plate.whitelist", "Whitelist");
-        this.add("gui.pressure_plate.blacklist", "Blacklist");
-        this.add("gui.pressure_plate.illuminated", "Illuminated");
-        this.add("gui.pressure_plate.silent", "Silent");
-        this.add("gui.pressure_plate.locked", "Locked");
-        this.add("gui.pressure_plate.shrouded", "Shrouded");
-        this.add("gui.pressure_plate.baby", "Baby");
+        this.add("gui.pressure_plate.whitelist.on", "Whitelist");
+        this.add("gui.pressure_plate.whitelist.off", "Blacklist");
+        this.add("gui.pressure_plate.illuminated.on", "Illuminated");
+        this.add("gui.pressure_plate.illuminated.off", "Darkened");
+        this.add("gui.pressure_plate.silent.on", "Noisy");
+        this.add("gui.pressure_plate.silent.off", "Silent");
+        this.add("gui.pressure_plate.locked.on", "Unlocked");
+        this.add("gui.pressure_plate.locked.off", "Locked");
+        this.add("gui.pressure_plate.shrouded.on", "Visible");
+        this.add("gui.pressure_plate.shrouded.off", "Shrouded");
+        this.add("gui.pressure_plate.baby.on", "Baby Mobs Only");
+        this.add("gui.pressure_plate.baby.off", "All Mobs");
     }
 
     public void add(CreativeModeTab tab, String name) {

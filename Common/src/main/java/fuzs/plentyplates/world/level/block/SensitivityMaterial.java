@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -26,11 +27,11 @@ import java.util.stream.Stream;
 import static fuzs.plentyplates.world.level.block.PressurePlateSetting.*;
 
 public enum SensitivityMaterial {
-    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, SILENT, SHROUDED, ILLUMINATED, LOCKED),
-    DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED),
-    CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED, BABY),
-    TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, SILENT, SHROUDED, ILLUMINATED, BABY),
-    SMOOTH_BASALT("smooth_basalt", Blocks.SMOOTH_BASALT, Sheep.class, new ResourceLocation("block/smooth_basalt"), ColorDataProvider::new, SILENT, SHROUDED, ILLUMINATED);
+    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, LOCKED),
+    DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType),
+    CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, BABY),
+    TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, BABY),
+    SMOOTH_BASALT("smooth_basalt", Blocks.SMOOTH_BASALT, Sheep.class, new ResourceLocation("block/smooth_basalt"), ColorDataProvider::new);
 
     private final ResourceLocation id;
     private final Block materialBlock;
@@ -48,7 +49,7 @@ public enum SensitivityMaterial {
         this.clazz = clazz;
         this.texture = texture;
         this.dataProvider = dataProvider;
-        this.settings = settings;
+        this.settings = ArrayUtils.addAll(PressurePlateSetting.defaultValues(), settings);
     }
 
     public Block getPressurePlateBlock() {
@@ -113,10 +114,6 @@ public enum SensitivityMaterial {
 
     public PressurePlateSetting[] getSettings() {
         return this.settings;
-    }
-
-    public int getSettingsAmount() {
-        return this.settings.length;
     }
 
     public static Block[] allBlocks() {

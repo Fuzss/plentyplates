@@ -10,7 +10,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class PressurePlateMenu extends AbstractContainerMenu {
     private final SensitivityMaterial material;
 
     public static ModMenuSupplier<?> create(SensitivityMaterial material) {
-        return (containerId1, inventory) -> new PressurePlateMenu(material, containerId1, new SimpleContainerData(PressurePlateSetting.values().length + 1), ContainerLevelAccess.NULL);
+        return (containerId1, inventory) -> new PressurePlateMenu(material, containerId1, new SimpleContainerData(PressurePlateSetting.values().length), ContainerLevelAccess.NULL);
     }
 
     public PressurePlateMenu(SensitivityMaterial material, int containerId, ContainerData containerData, ContainerLevelAccess access) {
@@ -37,12 +36,8 @@ public class PressurePlateMenu extends AbstractContainerMenu {
         return true;
     }
 
-    public boolean getWhitelistSetting() {
-        return this.containerData.get(0) == 1;
-    }
-
     public boolean getSettingsValue(PressurePlateSetting setting) {
-        return this.containerData.get(setting.getId() + 1) == 1;
+        return this.containerData.get(setting.ordinal()) == 1;
     }
 
     public void setCurrentValues(List<String> values) {
@@ -64,7 +59,6 @@ public class PressurePlateMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
-//        return stillValid(this.access, player, Blocks.BEACON);
+        return stillValid(this.access, player, this.material.getPressurePlateBlock());
     }
 }

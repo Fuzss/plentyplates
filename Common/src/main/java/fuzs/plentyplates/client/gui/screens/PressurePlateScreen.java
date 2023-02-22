@@ -88,54 +88,47 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
 
     private void addWhitelistButtons() {
         AbstractWidget[] buttons = new AbstractWidget[2];
-        int settingsAmount = this.menu.getMaterial().getSettingsAmount();
+        int settingsAmount = this.menu.getMaterial().getSettings().length - 1;
         int posX = (this.width - settingsAmount * 30 - 20) / 2;
         int posY = this.topPos + 20;
         for (int i = 0; i < buttons.length; i++) {
             int me = i;
             int other = (i + 1) % 2;
-            buttons[i] = this.addRenderableWidget(new ImageButton(posX, posY, 20, 20, i * 20, 166, TEXTURE_LOCATION, button -> {
+            buttons[i] = this.addRenderableWidget(new ImageButton(posX, posY, 20, 20, i * 20, 166, 20, TEXTURE_LOCATION, 256, 256, button -> {
                 this.sendButtonClick(0);
                 buttons[me].visible = false;
                 buttons[other].visible = true;
-            }));
+            }, (button, poseStack, mouseX, mouseY) -> {
+                this.renderTooltip(poseStack, PressurePlateSetting.WHITELIST.getComponent(me == 0), mouseX, mouseY);
+            }, Component.empty()));
         }
-        buttons[0].visible = this.menu.getWhitelistSetting();
-        buttons[1].visible = !this.menu.getWhitelistSetting();
+        buttons[0].visible = this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
+        buttons[1].visible = !this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
     }
 
     private void addSettingsButtons() {
         PressurePlateSetting[] settings = this.menu.getMaterial().getSettings();
-        int settingsAmount = this.menu.getMaterial().getSettingsAmount();
+        int settingsAmount = settings.length - 1;
         int posX = (this.width - settingsAmount * 30 - 20) / 2 + 30;
         int posY = this.topPos + 20;
         int i = 0;
         for (PressurePlateSetting setting : settings) {
-            int id = setting.getId();
-            this.addRenderableWidget(new ImageButton(posX + i++ * 30, posY, 20, 20, id * 20 + 40, 166, TEXTURE_LOCATION, button -> {
-                this.sendButtonClick(id + 1);
+            if (i++ == 0) continue;
+            this.addRenderableWidget(new ImageButton(posX + (i - 2) * 30, posY, 20, 20, setting.getTextureId() * 20 + 40, 166, TEXTURE_LOCATION, button -> {
+                this.sendButtonClick(setting.ordinal());
             }) {
-                private boolean rendering;
-
-                @Override
-                public void renderToolTip(PoseStack poseStack, int relativeMouseX, int relativeMouseY) {
-                    if (!this.rendering) {
-                        super.renderToolTip(poseStack, relativeMouseX, relativeMouseY);
-                    }
-                }
 
                 @Override
                 public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-                    this.rendering = true;
                     super.renderButton(poseStack, mouseX, mouseY, partialTick);
-                    if (!PressurePlateScreen.this.menu.getSettingsValue(setting)) {
+                    boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
+                    if (!settingsValue) {
                         TextureAtlasSprite textureatlassprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
                         RenderSystem.setShaderTexture(0, textureatlassprite.atlas().location());
                         blit(poseStack, this.x + 2, this.y + 2, this.getBlitOffset(), 16, 16, textureatlassprite);
                     }
-                    this.rendering = false;
-                    if (this.isHovered) {
-                        this.renderToolTip(poseStack, mouseX, mouseY);
+                    if (this.isHoveredOrFocused()) {
+                        PressurePlateScreen.this.renderTooltip(poseStack, setting.getComponent(settingsValue), mouseX, mouseY);
                     }
                 }
             });

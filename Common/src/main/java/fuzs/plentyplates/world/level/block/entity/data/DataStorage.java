@@ -19,7 +19,7 @@ public class DataStorage<T> {
     }
 
     public boolean contains(Entity entity) {
-        return this.data.contains(this.provider.fromEntity(entity));
+        return this.data.isEmpty() || this.data.contains(this.provider.fromEntity(entity));
     }
 
     public Collection<String> getAllowedValues() {

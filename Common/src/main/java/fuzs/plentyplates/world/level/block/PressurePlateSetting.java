@@ -1,55 +1,47 @@
 package fuzs.plentyplates.world.level.block;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.block.state.properties.Property;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Comparator;
-import java.util.stream.Stream;
 
 public enum PressurePlateSetting {
-    SHROUDED(3, "shrouded", DirectionalPressurePlateBlock.SHROUDED),
-    SILENT(1, "silent", DirectionalPressurePlateBlock.SILENT),
-    ILLUMINATED(0, "illuminated", DirectionalPressurePlateBlock.LIT),
-    LOCKED(2, "locked"),
-    BABY(4, "baby");
+    WHITELIST(true, "whitelist", -1),
+    SHROUDED(true, "shrouded", 3),
+    SILENT(true, "silent", 1),
+    ILLUMINATED(false, "illuminated", 0),
+    LOCKED(true, "locked", 2),
+    BABY(false, "baby", 4);
 
     private static final String TRANSLATION_KEY_PREFIX = "gui.pressure_plate.";
+    public static final int DEFAULT_SETTINGS;
 
-    private final int id;
-    private final int mask;
-    private final Component component;
-    @Nullable
-    private final Property<?> property;
+    private final int textureId;
+    private final Component componentOn;
+    private final Component componentOff;
+    private final boolean defaultValue;
 
-    PressurePlateSetting(int id, String name) {
-        this(id, name, null);
+    PressurePlateSetting(boolean defaultValue, String translationKey, int textureId) {
+        this.textureId = textureId;
+        this.componentOn = Component.translatable(TRANSLATION_KEY_PREFIX + translationKey + ".on");
+        this.componentOff = Component.translatable(TRANSLATION_KEY_PREFIX + translationKey + ".off");
+        this.defaultValue = defaultValue;
     }
 
-    PressurePlateSetting(int id, String translationKey, @Nullable Property<?> property) {
-        this.id = id;
-        this.mask = 1 << id;
-        this.component = Component.translatable(TRANSLATION_KEY_PREFIX + translationKey);
-        this.property = property;
+    public int getTextureId() {
+        return this.textureId;
     }
 
-    public int getId() {
-        return this.id;
+    public Component getComponent(boolean on) {
+        return on ? this.componentOn : this.componentOff;
     }
 
-    public int getMask() {
-        return this.mask;
+    public static PressurePlateSetting[] defaultValues() {
+        return new PressurePlateSetting[]{WHITELIST, SILENT, SHROUDED, ILLUMINATED};
     }
 
-    public Component getComponent() {
-        return this.component;
-    }
-
-    public Property<?> getProperty() {
-        return this.property;
-    }
-
-    public static PressurePlateSetting[] sortedValues() {
-        return Stream.of(values()).sorted(Comparator.comparingInt(PressurePlateSetting::getId)).toArray(PressurePlateSetting[]::new);
+    static {
+        int defaultSettings = 0;
+        for (PressurePlateSetting setting : values()) {
+            if (setting.defaultValue) defaultSettings |= 1 << setting.ordinal();
+        }
+        DEFAULT_SETTINGS = defaultSettings;
     }
 }
