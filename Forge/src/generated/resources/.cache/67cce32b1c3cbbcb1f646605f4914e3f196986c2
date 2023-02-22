@@ -1,6 +1,6 @@
-// 1.19.2	2023-02-19T19:55:39.268033	LootTables
-4e16d01661c2273bfae5d5ff66dc90cd6d3b1cbd data/plentyplates/loot_tables/blocks/calcite_pressure_plate.json
-6bcdbeebaa6976bfdba632ca92aa024510256a0b data/plentyplates/loot_tables/blocks/deepslate_pressure_plate.json
-1ee4f423e90d1d60f5f6f24b36f0d8292322a366 data/plentyplates/loot_tables/blocks/obsidian_pressure_plate.json
-f36fb5986156d4f8c0de13dd6179ffd7a47654a1 data/plentyplates/loot_tables/blocks/smooth_basalt_pressure_plate.json
-67a71f7398fec6b0ef26cc0da9a701ad39c617c7 data/plentyplates/loot_tables/blocks/tuff_pressure_plate.json
+// 1.19.2	2023-02-22T17:19:17.854116	LootTables
+948766665ae68135fe787849af8b071fee721fe7 data/plentyplates/loot_tables/blocks/calcite_pressure_plate.json
+4e50470adc2df8e660e7809056aebf677e0fd7bf data/plentyplates/loot_tables/blocks/deepslate_pressure_plate.json
+b9df569b51206214b67ff76cf7d120ec73c7f0f0 data/plentyplates/loot_tables/blocks/obsidian_pressure_plate.json
+28fef3b074c879b39aa61fc3340200d014202f55 data/plentyplates/loot_tables/blocks/smooth_basalt_pressure_plate.json
+bcbe36f91a37789cc1e056ef829549a01ebb8831 data/plentyplates/loot_tables/blocks/tuff_pressure_plate.json

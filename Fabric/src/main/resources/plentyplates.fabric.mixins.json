@@ -7,6 +7,7 @@
   "mixins": [
   ],
   "client": [
+    "client.accessor.PackRepositoryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

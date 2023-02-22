@@ -3,6 +3,7 @@ package fuzs.plentyplates.world.level.block;
 import com.google.common.collect.Maps;
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.networking.ClientboundInitialValuesMessage;
+import fuzs.plentyplates.proxy.Proxy;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.plentyplates.world.phys.shapes.VoxelUtils;
 import net.minecraft.ChatFormatting;
@@ -182,7 +183,8 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.activated_by", Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GOLD));
+        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.activated_by", Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
+        Proxy.INSTANCE.appendPressurePlateHoverText(tooltip);
     }
 
     @Nullable

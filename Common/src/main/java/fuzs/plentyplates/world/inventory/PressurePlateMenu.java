@@ -53,6 +53,13 @@ public class PressurePlateMenu extends AbstractContainerMenu {
     }
 
     @Override
+    public void setData(int id, int data) {
+        super.setData(id, data);
+        // required for whitelist/blacklist buttons
+        this.broadcastChanges();
+    }
+
+    @Override
     public ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
     }

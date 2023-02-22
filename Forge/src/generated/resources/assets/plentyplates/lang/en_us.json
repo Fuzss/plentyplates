@@ -6,6 +6,7 @@
   "block.plentyplates.obsidian_pressure_plate": "Obsidian Pressure Plate",
   "block.plentyplates.obsidian_pressure_plate.entities": "Players",
   "block.plentyplates.pressure_plate.activated_by": "Activated By: %s",
+  "block.plentyplates.pressure_plate.description": "Use %s + %s with an empty hand to open configuration screen after placing.",
   "block.plentyplates.smooth_basalt_pressure_plate": "Smooth Basalt Pressure Plate",
   "block.plentyplates.smooth_basalt_pressure_plate.entities": "Sheep",
   "block.plentyplates.tuff_pressure_plate": "Tuff Pressure Plate",

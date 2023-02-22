@@ -30,7 +30,10 @@ public class ColorDataProvider implements DataProvider<DyeColor> {
 
     @Override
     public DyeColor fromTag(Tag tag) {
-        return DyeColor.byId(((ByteTag) tag).getAsByte());
+        if (tag.getId() == Tag.TAG_BYTE) {
+            return DyeColor.byId(((ByteTag) tag).getAsByte());
+        }
+        return null;
     }
 
     @Override

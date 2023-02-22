@@ -1,10 +1,12 @@
 package fuzs.plentyplates.data;
 
+import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 
 import java.util.function.Consumer;
 
@@ -22,6 +24,10 @@ public class ModRecipeProvider extends RecipeProvider {
                     .pattern("##")
                     .unlockedBy(getHasName(material.getMaterialBlock()), has(material.getMaterialBlock()))
                     .save(recipeConsumer);
+            ShapelessRecipeBuilder.shapeless(material.getPressurePlateBlock())
+                    .requires(material.getPressurePlateBlock())
+                    .unlockedBy(getHasName(material.getPressurePlateBlock()), has(material.getPressurePlateBlock()))
+                    .save(recipeConsumer, PlentyPlates.id("clear_" + material.id().getPath()));
         }
     }
 }

@@ -24,10 +24,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static fuzs.plentyplates.world.level.block.PressurePlateSetting.*;
+import static fuzs.plentyplates.world.level.block.PressurePlateSetting.BABY;
 
 public enum SensitivityMaterial {
-    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, LOCKED),
+    OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new),
     DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType),
     CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, BABY),
     TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, BABY),

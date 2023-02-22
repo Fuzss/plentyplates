@@ -61,7 +61,10 @@ public class RegistryDataProvider<T> implements DataProvider<T> {
 
     @Override
     public T fromTag(Tag tag) {
-        return this.fromString(tag.getAsString());
+        if (tag.getId() == Tag.TAG_STRING) {
+            return this.fromString(tag.getAsString());
+        }
+        return null;
     }
 
     @Override

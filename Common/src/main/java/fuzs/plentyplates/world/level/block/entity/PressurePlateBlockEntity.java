@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -70,6 +71,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     public void setSettingsValue(int id, int value) {
         this.settings = this.settings & ~(1 << id) | (value & 1) << id;
         this.update(PressurePlateSetting.values()[id], value == 1);
+        this.setChanged();
     }
 
     public int getSettingsValue(int id) {
@@ -81,6 +83,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public boolean allowedToAccess(Player player) {
+        if (!player.getAbilities().mayBuild) return false;
         if (!this.getSettingsValue(PressurePlateSetting.LOCKED) && this.owner != null) {
             return this.owner.equals(player.getUUID());
         }
@@ -103,7 +106,8 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public boolean permits(Entity entity) {
-        return this.dataStorage.contains(entity) == this.getSettingsValue(PressurePlateSetting.WHITELIST);
+        if (entity instanceof LivingEntity livingEntity && this.getSettingsValue(PressurePlateSetting.BABY) && !livingEntity.isBaby()) return false;
+        return this.dataStorage.permits(entity, this.getSettingsValue(PressurePlateSetting.WHITELIST));
     }
 
     public Collection<String> getAllowedValues() {
@@ -112,6 +116,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
     public void setCurrentValues(List<String> values) {
         this.dataStorage.setCurrentValues(values);
+        this.setChanged();
     }
 
     public List<String> getCurrentValues() {
@@ -126,7 +131,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
         }
         this.settings = tag.getByte(TAG_SETTINGS);
         this.setSensitivityMaterial(SensitivityMaterial.values()[tag.getByte(TAG_MATERIAL)]);
-        this.dataStorage.load(tag);
+        this.dataStorage.loadFrom(tag);
     }
 
     @Override
@@ -137,7 +142,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
         }
         tag.putByte(TAG_SETTINGS, (byte) this.settings);
         tag.putByte(TAG_MATERIAL, (byte) this.sensitivityMaterial.ordinal());
-        this.dataStorage.save(tag);
+        this.dataStorage.saveTo(tag);
     }
 
     @Override

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "plentyplates:smooth_basalt_pressure_plate"
+    }
+  ],
+  "result": {
+    "item": "plentyplates:smooth_basalt_pressure_plate"
+  }
+}

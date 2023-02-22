@@ -1,4 +1,4 @@
-package fuzs.plentyplates.client.gui.screens;
+package fuzs.plentyplates.client.gui.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

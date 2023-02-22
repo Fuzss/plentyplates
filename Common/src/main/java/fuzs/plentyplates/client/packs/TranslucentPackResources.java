@@ -13,6 +13,9 @@ import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,5 +102,15 @@ public class TranslucentPackResources implements PackResources {
     // overrides a method patched in by Forge
     public boolean isHidden() {
         return true;
+    }
+
+
+    public static RepositorySource buildRepositorySource() {
+        return (packConsumer, packConstructor) -> {
+            Pack pack = Pack.create(PlentyPlates.MOD_ID, true, TranslucentPackResources::new, packConstructor, Pack.Position.TOP, PackSource.BUILT_IN);
+            if (pack != null) {
+                packConsumer.accept(pack);
+            }
+        };
     }
 }

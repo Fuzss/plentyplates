@@ -24,6 +24,7 @@ public class ModLanguageProvider extends LanguageProvider {
         this.add(SensitivityMaterial.CALCITE.translationKey(), "Calcite Pressure Plate");
         this.add(SensitivityMaterial.TUFF.translationKey(), "Tuff Pressure Plate");
         this.add(SensitivityMaterial.SMOOTH_BASALT.translationKey(), "Smooth Basalt Pressure Plate");
+        this.add("block.plentyplates.pressure_plate.description", "Use %s + %s with an empty hand to open configuration screen after placing.");
         this.add("block.plentyplates.pressure_plate.activated_by", "Activated By: %s");
         this.add(SensitivityMaterial.OBSIDIAN.descriptionKey(), "Players");
         this.add(SensitivityMaterial.DEEPSLATE.descriptionKey(), "Mobs");

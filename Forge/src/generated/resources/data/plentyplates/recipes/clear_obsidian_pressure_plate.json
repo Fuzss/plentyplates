@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "plentyplates:obsidian_pressure_plate"
+    }
+  ],
+  "result": {
+    "item": "plentyplates:obsidian_pressure_plate"
+  }
+}
