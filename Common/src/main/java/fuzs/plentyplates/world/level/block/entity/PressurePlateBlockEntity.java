@@ -20,6 +20,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class PressurePlateBlockEntity extends BlockEntity implements MenuProvider {
@@ -108,6 +111,18 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
     public boolean permits(Entity entity) {
         return this.dataStorage.contains(entity) == this.getWhitelistSetting();
+    }
+
+    public Collection<String> getAllowedValues() {
+        return this.dataStorage.getAllowedValues();
+    }
+
+    public void setCurrentValues(List<String> values) {
+        this.dataStorage.setCurrentValues(values);
+    }
+
+    public List<String> getCurrentValues() {
+        return this.dataStorage.getCurrentValues();
     }
 
     @Override

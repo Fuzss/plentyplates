@@ -2,6 +2,7 @@ package fuzs.plentyplates.world.inventory;
 
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
+import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.puzzleslib.init.builder.ModMenuSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -10,6 +11,8 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
 
 public class PressurePlateMenu extends AbstractContainerMenu {
     private final ContainerData containerData;
@@ -40,6 +43,14 @@ public class PressurePlateMenu extends AbstractContainerMenu {
 
     public boolean getSettingsValue(PressurePlateSetting setting) {
         return this.containerData.get(setting.getId() + 1) == 1;
+    }
+
+    public void setCurrentValues(List<String> values) {
+        this.access.execute((level, pos) -> {
+            if (level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
+                blockEntity.setCurrentValues(values);
+            }
+        });
     }
 
     public SensitivityMaterial getMaterial() {

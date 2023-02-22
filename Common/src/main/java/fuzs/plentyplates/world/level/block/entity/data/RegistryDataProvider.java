@@ -6,24 +6,28 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class RegistryDataProvider<T> implements DataProvider<T> {
     private final Registry<T> registry;
     private final Function<Entity, T> extractor;
+    private final Predicate<T> filter;
 
-    public RegistryDataProvider(Registry<T> registry, Function<Entity, T> extractor) {
+    public RegistryDataProvider(Registry<T> registry, Function<Entity, T> extractor, Predicate<T> filter) {
         this.registry = registry;
         this.extractor = extractor;
+        this.filter = filter;
     }
 
     public static RegistryDataProvider<EntityType<?>> entityType() {
-        return new RegistryDataProvider<>(Registry.ENTITY_TYPE, Entity::getType);
+        return new RegistryDataProvider<>(Registry.ENTITY_TYPE, Entity::getType, entityType -> entityType.getCategory() != MobCategory.MISC);
     }
 
     public static RegistryDataProvider<VillagerProfession> villagerProfession() {
@@ -32,12 +36,17 @@ public class RegistryDataProvider<T> implements DataProvider<T> {
                 return villager.getVillagerData().getProfession();
             }
             return null;
-        });
+        }, profession -> true);
     }
 
+    @Nullable
     @Override
     public T fromString(String value) {
-        return this.registry.get(new ResourceLocation(value));
+        ResourceLocation resourceLocation = ResourceLocation.tryParse(value);
+        if (resourceLocation != null && this.registry.containsKey(resourceLocation)) {
+            return this.registry.get(resourceLocation);
+        }
+        return null;
     }
 
     @Override
@@ -47,7 +56,7 @@ public class RegistryDataProvider<T> implements DataProvider<T> {
 
     @Override
     public List<? extends T> getAllValues() {
-        return this.registry.stream().toList();
+        return this.registry.stream().filter(this.filter).toList();
     }
 
     @Override

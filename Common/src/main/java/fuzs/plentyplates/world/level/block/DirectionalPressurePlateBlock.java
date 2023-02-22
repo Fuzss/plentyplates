@@ -1,12 +1,15 @@
 package fuzs.plentyplates.world.level.block;
 
 import com.google.common.collect.Maps;
+import fuzs.plentyplates.PlentyPlates;
+import fuzs.plentyplates.networking.ClientboundInitialValuesMessage;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.plentyplates.world.phys.shapes.VoxelUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -193,7 +196,9 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         if (player.isSecondaryUseActive()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
-                    player.openMenu(blockEntity);
+                    player.openMenu(blockEntity).ifPresent(containerId -> {
+                        PlentyPlates.NETWORKING.sendTo(new ClientboundInitialValuesMessage(containerId, blockEntity.getAllowedValues(), blockEntity.getCurrentValues()), (ServerPlayer) player);
+                    });
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);

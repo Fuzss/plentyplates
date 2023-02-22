@@ -12,9 +12,10 @@ import java.util.List;
 
 public class ColorDataProvider implements DataProvider<DyeColor> {
 
+    @Nullable
     @Override
     public DyeColor fromString(String value) {
-        return DyeColor.byName(value, DyeColor.WHITE);
+        return DyeColor.byName(value, null);
     }
 
     @Override

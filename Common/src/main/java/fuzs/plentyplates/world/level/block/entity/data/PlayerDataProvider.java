@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public class PlayerDataProvider implements DataProvider<Player> {
 
+    @Nullable
     @Override
     public Player fromString(String value) {
         return Proxy.INSTANCE.getGameServer().getPlayerList().getPlayerByName(value);

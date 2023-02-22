@@ -28,7 +28,7 @@ import static fuzs.plentyplates.world.level.block.PressurePlateSetting.*;
 public enum SensitivityMaterial {
     OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new, SILENT, SHROUDED, ILLUMINATED, LOCKED),
     DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED),
-    CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED),
+    CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, SILENT, SHROUDED, ILLUMINATED, BABY),
     TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, SILENT, SHROUDED, ILLUMINATED, BABY),
     SMOOTH_BASALT("smooth_basalt", Blocks.SMOOTH_BASALT, Sheep.class, new ResourceLocation("block/smooth_basalt"), ColorDataProvider::new, SILENT, SHROUDED, ILLUMINATED);
 
