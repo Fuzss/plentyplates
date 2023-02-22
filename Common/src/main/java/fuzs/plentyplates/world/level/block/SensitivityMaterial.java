@@ -12,8 +12,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -24,14 +24,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static fuzs.plentyplates.world.level.block.PressurePlateSetting.BABY;
-
 public enum SensitivityMaterial {
     OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new),
-    DEEPSLATE("deepslate", Blocks.DEEPSLATE, Mob.class, new ResourceLocation("block/deepslate"), RegistryDataProvider::entityType),
-    CALCITE("calcite", Blocks.CALCITE, Animal.class, new ResourceLocation("block/calcite"), RegistryDataProvider::entityType, BABY),
-    TUFF("tuff", Blocks.TUFF, Villager.class, new ResourceLocation("block/tuff"), RegistryDataProvider::villagerProfession, BABY),
-    SMOOTH_BASALT("smooth_basalt", Blocks.SMOOTH_BASALT, Sheep.class, new ResourceLocation("block/smooth_basalt"), ColorDataProvider::new);
+    COBBLESTONE("cobblestone", Blocks.COBBLESTONE, Entity.class, new ResourceLocation("block/cobblestone"), () -> RegistryDataProvider.entityType(false)),
+    MOSSY_COBBLESTONE("mossy_cobblestone", Blocks.MOSSY_COBBLESTONE, ItemEntity.class, new ResourceLocation("block/mossy_cobblestone"), RegistryDataProvider::item),
+    STONE_BRICKS("stone_bricks", Blocks.STONE_BRICKS, Mob.class, new ResourceLocation("block/stone_bricks"), () -> RegistryDataProvider.entityType(true), PressurePlateSetting.BABY),
+    MOSSY_STONE_BRICKS("mossy_stone_bricks", Blocks.MOSSY_STONE_BRICKS, Villager.class, new ResourceLocation("block/mossy_stone_bricks"), RegistryDataProvider::villagerProfession, PressurePlateSetting.BABY),
+    CHISELED_STONE_BRICKS("chiseled_stone_bricks", Blocks.CHISELED_STONE_BRICKS, Sheep.class, new ResourceLocation("block/chiseled_stone_bricks"), ColorDataProvider::new);
 
     private final ResourceLocation id;
     private final Block materialBlock;

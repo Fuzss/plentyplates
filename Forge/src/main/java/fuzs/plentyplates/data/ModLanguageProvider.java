@@ -20,17 +20,19 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         this.add(ModRegistry.CREATIVE_MODE_TAB, PlentyPlates.MOD_NAME);
         this.add(SensitivityMaterial.OBSIDIAN.translationKey(), "Obsidian Pressure Plate");
-        this.add(SensitivityMaterial.DEEPSLATE.translationKey(), "Deepslate Pressure Plate");
-        this.add(SensitivityMaterial.CALCITE.translationKey(), "Calcite Pressure Plate");
-        this.add(SensitivityMaterial.TUFF.translationKey(), "Tuff Pressure Plate");
-        this.add(SensitivityMaterial.SMOOTH_BASALT.translationKey(), "Smooth Basalt Pressure Plate");
+        this.add(SensitivityMaterial.COBBLESTONE.translationKey(), "Cobblestone Pressure Plate");
+        this.add(SensitivityMaterial.MOSSY_COBBLESTONE.translationKey(), "Mossy Cobblestone Pressure Plate");
+        this.add(SensitivityMaterial.STONE_BRICKS.translationKey(), "Stone Bricks Pressure Plate");
+        this.add(SensitivityMaterial.MOSSY_STONE_BRICKS.translationKey(), "Mossy Stone Bricks Pressure Plate");
+        this.add(SensitivityMaterial.CHISELED_STONE_BRICKS.translationKey(), "Chiseled Stone Bricks Pressure Plate");
         this.add("block.plentyplates.pressure_plate.description", "Use %s + %s with an empty hand to open configuration screen after placing.");
         this.add("block.plentyplates.pressure_plate.activated_by", "Activated By: %s");
         this.add(SensitivityMaterial.OBSIDIAN.descriptionKey(), "Players");
-        this.add(SensitivityMaterial.DEEPSLATE.descriptionKey(), "Mobs");
-        this.add(SensitivityMaterial.CALCITE.descriptionKey(), "Animals");
-        this.add(SensitivityMaterial.TUFF.descriptionKey(), "Villagers");
-        this.add(SensitivityMaterial.SMOOTH_BASALT.descriptionKey(), "Sheep");
+        this.add(SensitivityMaterial.COBBLESTONE.descriptionKey(), "Entities");
+        this.add(SensitivityMaterial.MOSSY_COBBLESTONE.descriptionKey(), "Items");
+        this.add(SensitivityMaterial.STONE_BRICKS.descriptionKey(), "Mobs");
+        this.add(SensitivityMaterial.MOSSY_STONE_BRICKS.descriptionKey(), "Villagers");
+        this.add(SensitivityMaterial.CHISELED_STONE_BRICKS.descriptionKey(), "Sheep");
         this.add("container.pressure_plate", "Pressure Plate");
         this.add("gui.pressure_plate.whitelist.on", "Whitelist");
         this.add("gui.pressure_plate.whitelist.off", "Blacklist");

@@ -17,7 +17,9 @@ public class DataStorage<T> {
 
     public boolean permits(Entity entity, boolean whitelist) {
         if (this.data.isEmpty()) return true;
-        return this.data.contains(this.provider.fromEntity(entity)) == whitelist;
+        T providedValue = this.provider.fromEntity(entity);
+        if (providedValue == null) return false;
+        return this.data.contains(providedValue) == whitelist;
     }
 
     public Collection<String> getAllowedValues() {

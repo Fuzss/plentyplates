@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "plentyplates:mossy_cobblestone_pressure_plate"
+    }
+  ],
+  "result": {
+    "item": "plentyplates:mossy_cobblestone_pressure_plate"
+  }
+}

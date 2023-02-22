@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:cobblestone"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "item": "plentyplates:cobblestone_pressure_plate"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "minecraft:stone_bricks"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "item": "plentyplates:stone_bricks_pressure_plate"
+  }
+}
