@@ -286,7 +286,9 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             if (this.isValidInput(s)) {
                 List<String> suggestions = this.allowedValues.stream().filter(Predicate.not(this.currentValues::contains)).toList();
                 int index = suggestions.indexOf(s);
-                this.editBox.setValue(suggestions.get(((index + increment) % suggestions.size() + suggestions.size()) % suggestions.size()));
+                if (index != -1) {
+                    this.editBox.setValue(suggestions.get(((index + increment) % suggestions.size() + suggestions.size()) % suggestions.size()));
+                }
             } else {
                 String suggestion = this.allowedValues.stream()
                         .filter(Predicate.not(this.currentValues::contains))
