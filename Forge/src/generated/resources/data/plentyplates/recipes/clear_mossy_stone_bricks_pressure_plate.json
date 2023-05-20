@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
   "ingredients": [
     {
       "item": "plentyplates:mossy_stone_bricks_pressure_plate"

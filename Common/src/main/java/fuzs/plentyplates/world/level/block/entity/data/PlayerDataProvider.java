@@ -1,7 +1,7 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
 import com.mojang.authlib.GameProfile;
-import fuzs.puzzleslib.proxy.Proxy;
+import fuzs.puzzleslib.api.core.v1.Proxy;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;

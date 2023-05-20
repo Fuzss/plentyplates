@@ -1,12 +1,12 @@
 package fuzs.plentyplates;
 
-import fuzs.puzzleslib.core.CommonFactories;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import net.fabricmc.api.ModInitializer;
 
 public class PlentyPlatesFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommonFactories.INSTANCE.modConstructor(PlentyPlates.MOD_ID).accept(new PlentyPlates());
+        ModConstructor.construct(PlentyPlates.MOD_ID, PlentyPlates::new);
     }
 }

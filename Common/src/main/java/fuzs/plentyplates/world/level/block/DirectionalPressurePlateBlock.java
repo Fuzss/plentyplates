@@ -3,16 +3,16 @@ package fuzs.plentyplates.world.level.block;
 import com.google.common.collect.Maps;
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.networking.ClientboundInitialValuesMessage;
-import fuzs.plentyplates.proxy.Proxy;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.plentyplates.world.phys.shapes.VoxelUtils;
+import fuzs.puzzleslib.api.core.v1.ModLoaderEnvironment;
+import fuzs.puzzleslib.api.core.v1.Proxy;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -71,7 +71,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     private final SensitivityMaterial sensitivityMaterial;
 
     public DirectionalPressurePlateBlock(SensitivityMaterial sensitivityMaterial, Properties properties) {
-        super(Sensitivity.EVERYTHING, properties);
+        super(Sensitivity.EVERYTHING, properties, SoundEvents.STONE_PRESSURE_PLATE_CLICK_OFF, SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON);
         this.sensitivityMaterial = sensitivityMaterial;
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP).setValue(SHROUDED, false).setValue(SILENT, false).setValue(LIT, false));
     }
@@ -116,17 +116,15 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     @Override
     protected void playOnSound(LevelAccessor level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        if (!state.getValue(SILENT)) {
-            level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON, SoundSource.BLOCKS, 0.3F, 0.6F);
+        if (!level.getBlockState(pos).getValue(SILENT)) {
+            super.playOnSound(level, pos);
         }
     }
 
     @Override
     protected void playOffSound(LevelAccessor level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        if (!state.getValue(SILENT)) {
-            level.playSound(null, pos, SoundEvents.STONE_PRESSURE_PLATE_CLICK_OFF, SoundSource.BLOCKS, 0.3F, 0.5F);
+        if (!level.getBlockState(pos).getValue(SILENT)) {
+            super.playOffSound(level, pos);
         }
     }
 
@@ -184,7 +182,10 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("block.plentyplates.pressure_plate.activated_by", Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
-        Proxy.INSTANCE.appendPressurePlateHoverText(tooltip);
+        if (!ModLoaderEnvironment.INSTANCE.isClient()) return;
+        Component shiftComponent = Component.empty().append(Proxy.INSTANCE.getKeyMappingComponent("key.sneak")).withStyle(ChatFormatting.LIGHT_PURPLE);
+        Component useComponent = Component.empty().append(Proxy.INSTANCE.getKeyMappingComponent("key.use")).withStyle(ChatFormatting.LIGHT_PURPLE);
+        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.description", shiftComponent, useComponent).withStyle(ChatFormatting.GRAY));
     }
 
     @Nullable

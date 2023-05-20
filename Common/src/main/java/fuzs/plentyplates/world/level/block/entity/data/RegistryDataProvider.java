@@ -1,6 +1,7 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -30,15 +31,15 @@ public class RegistryDataProvider<T> implements DataProvider<T> {
     }
 
     public static RegistryDataProvider<EntityType<?>> entityType(boolean filterMisc) {
-        return new RegistryDataProvider<>(Registry.ENTITY_TYPE, Entity::getType, entityType -> !filterMisc || entityType.getCategory() != MobCategory.MISC);
+        return new RegistryDataProvider<>(BuiltInRegistries.ENTITY_TYPE, Entity::getType, entityType -> !filterMisc || entityType.getCategory() != MobCategory.MISC);
     }
 
     public static RegistryDataProvider<Item> item() {
-        return new RegistryDataProvider<>(Registry.ITEM, entity -> entity instanceof ItemEntity item ? item.getItem().getItem() : Items.AIR, item -> item != Items.AIR);
+        return new RegistryDataProvider<>(BuiltInRegistries.ITEM, entity -> entity instanceof ItemEntity item ? item.getItem().getItem() : Items.AIR, item -> item != Items.AIR);
     }
 
     public static RegistryDataProvider<VillagerProfession> villagerProfession() {
-        return new RegistryDataProvider<>(Registry.VILLAGER_PROFESSION, entity -> {
+        return new RegistryDataProvider<>(BuiltInRegistries.VILLAGER_PROFESSION, entity -> {
             if (entity instanceof Villager villager) {
                 return villager.getVillagerData().getProfession();
             }

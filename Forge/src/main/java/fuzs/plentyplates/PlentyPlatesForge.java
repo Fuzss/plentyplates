@@ -1,13 +1,17 @@
 package fuzs.plentyplates;
 
 import fuzs.plentyplates.data.*;
-import fuzs.puzzleslib.core.CommonFactories;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 @Mod(PlentyPlates.MOD_ID)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -15,17 +19,20 @@ public class PlentyPlatesForge {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        CommonFactories.INSTANCE.modConstructor(PlentyPlates.MOD_ID).accept(new PlentyPlates());
+        ModConstructor.construct(PlentyPlates.MOD_ID, PlentyPlates::new);
     }
 
     @SubscribeEvent
     public static void onGatherData(final GatherDataEvent evt) {
-        DataGenerator dataGenerator = evt.getGenerator();
+        final DataGenerator dataGenerator = evt.getGenerator();
+        final PackOutput packOutput = dataGenerator.getPackOutput();
+        final CompletableFuture<HolderLookup.Provider> lookupProvider = evt.getLookupProvider();
         final ExistingFileHelper fileHelper = evt.getExistingFileHelper();
-        dataGenerator.addProvider(true, new ModBlockStateProvider(dataGenerator, PlentyPlates.MOD_ID, fileHelper));
-        dataGenerator.addProvider(true, new ModBlockTagsProvider(dataGenerator, PlentyPlates.MOD_ID, fileHelper));
-        dataGenerator.addProvider(true, new ModLanguageProvider(dataGenerator, PlentyPlates.MOD_ID));
-        dataGenerator.addProvider(true, new ModLootTableProvider(dataGenerator, PlentyPlates.MOD_ID));
-        dataGenerator.addProvider(true, new ModRecipeProvider(dataGenerator));
+        dataGenerator.addProvider(true, new ModBlockStateProvider(packOutput, PlentyPlates.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModBlockTagsProvider(packOutput, lookupProvider, PlentyPlates.MOD_ID, fileHelper));
+        dataGenerator.addProvider(true, new ModLanguageProvider(packOutput, PlentyPlates.MOD_ID));
+        dataGenerator.addProvider(true, new ModBlockLootProvider(packOutput, PlentyPlates.MOD_ID));
+        dataGenerator.addProvider(true, new ModRecipeProvider(packOutput));
+        dataGenerator.addProvider(true, new ModSpriteSourceProvider(packOutput, PlentyPlates.MOD_ID, fileHelper));
     }
 }

@@ -1,11 +1,8 @@
 package fuzs.plentyplates.client;
 
 import fuzs.plentyplates.PlentyPlates;
-import fuzs.plentyplates.client.packs.TranslucentPackResources;
-import fuzs.puzzleslib.client.core.ClientFactories;
-import net.minecraft.server.packs.PackType;
+import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -15,13 +12,6 @@ public class PlentyPlatesForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ClientFactories.INSTANCE.clientModConstructor(PlentyPlates.MOD_ID).accept(new PlentyPlatesClient());
-    }
-
-    @SubscribeEvent
-    public static void onAddPackFinders(final AddPackFindersEvent evt) {
-        if (evt.getPackType() == PackType.CLIENT_RESOURCES) {
-            evt.addRepositorySource(TranslucentPackResources.buildRepositorySource());
-        }
+        ClientModConstructor.construct(PlentyPlates.MOD_ID, PlentyPlatesClient::new);
     }
 }

@@ -2,29 +2,30 @@ package fuzs.plentyplates.data;
 
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
-import net.minecraft.data.DataGenerator;
+import fuzs.puzzleslib.api.data.v1.AbstractRecipeProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 
 import java.util.function.Consumer;
 
-public class ModRecipeProvider extends RecipeProvider {
+public class ModRecipeProvider extends AbstractRecipeProvider {
 
-    public ModRecipeProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
+    public ModRecipeProvider(PackOutput packOutput) {
+        super(packOutput);
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> recipeConsumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
         for (SensitivityMaterial material : SensitivityMaterial.values()) {
-            ShapedRecipeBuilder.shaped(material.getPressurePlateBlock())
+            ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, material.getPressurePlateBlock())
                     .define('#', material.getMaterialBlock())
                     .pattern("##")
                     .unlockedBy(getHasName(material.getMaterialBlock()), has(material.getMaterialBlock()))
                     .save(recipeConsumer);
-            ShapelessRecipeBuilder.shapeless(material.getPressurePlateBlock())
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.REDSTONE, material.getPressurePlateBlock())
                     .requires(material.getPressurePlateBlock())
                     .unlockedBy(getHasName(material.getPressurePlateBlock()), has(material.getPressurePlateBlock()))
                     .save(recipeConsumer, PlentyPlates.id("clear_" + material.id().getPath()));

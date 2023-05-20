@@ -8,7 +8,7 @@ import fuzs.plentyplates.world.level.block.entity.data.DataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.PlayerDataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.RegistryDataProvider;
 import net.minecraft.Util;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -53,8 +53,8 @@ public enum SensitivityMaterial {
 
     public Block getPressurePlateBlock() {
         if (this.pressurePlateBlock == null) {
-            Preconditions.checkArgument(Registry.BLOCK.containsKey(this.id()));
-            this.pressurePlateBlock = Registry.BLOCK.get(this.id());
+            Preconditions.checkArgument(BuiltInRegistries.BLOCK.containsKey(this.id()));
+            this.pressurePlateBlock = BuiltInRegistries.BLOCK.get(this.id());
         }
         return this.pressurePlateBlock;
     }
@@ -62,8 +62,8 @@ public enum SensitivityMaterial {
     @SuppressWarnings("unchecked")
     public MenuType<PressurePlateMenu> getMenuType() {
         if (this.menuType == null) {
-            Preconditions.checkArgument(Registry.MENU.containsKey(this.id()));
-            this.menuType = (MenuType<PressurePlateMenu>) Registry.MENU.get(this.id());
+            Preconditions.checkArgument(BuiltInRegistries.MENU.containsKey(this.id()));
+            this.menuType = (MenuType<PressurePlateMenu>) BuiltInRegistries.MENU.get(this.id());
         }
         return this.menuType;
     }

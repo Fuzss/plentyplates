@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.GameRenderer;
@@ -69,7 +70,6 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     @Override
     protected void init() {
         super.init();
-        this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
         this.addRenderableWidget(new ImageButton(this.leftPos + this.imageWidth - 3 - 21, this.topPos - 18, 15, 15, 203, 0, TEXTURE_LOCATION, button -> {
@@ -82,7 +82,6 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
 
     @Override
     public void removed() {
-        this.minecraft.keyboardHandler.setSendRepeatsToGui(false);
         this.menu.removeSlotListener(this);
     }
 
@@ -104,9 +103,8 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 this.sendButtonClick(0);
                 this.whitelistButtons[me].visible = false;
                 this.whitelistButtons[other].visible = true;
-            }, (button, poseStack, mouseX, mouseY) -> {
-                this.renderTooltip(poseStack, PressurePlateSetting.WHITELIST.getComponent(me == 0), mouseX, mouseY);
-            }, Component.empty()));
+            }));
+            this.whitelistButtons[i].setTooltip(Tooltip.create(PressurePlateSetting.WHITELIST.getComponent(me == 0)));
         }
         this.updateWhitelistButtons();
     }
@@ -136,8 +134,8 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                     boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
                     if (!settingsValue) {
                         TextureAtlasSprite textureatlassprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
-                        RenderSystem.setShaderTexture(0, textureatlassprite.atlas().location());
-                        blit(poseStack, this.x + 2, this.y + 2, this.getBlitOffset(), 16, 16, textureatlassprite);
+                        RenderSystem.setShaderTexture(0, textureatlassprite.atlasLocation());
+                        blit(poseStack, this.getX() + 2, this.getY() + 2, this.getBlitOffset(), 16, 16, textureatlassprite);
                     }
                     if (this.isHoveredOrFocused()) {
                         PressurePlateScreen.this.renderTooltip(poseStack, setting.getComponent(settingsValue), mouseX, mouseY);
@@ -205,8 +203,6 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                     this.selectedLabel = -1;
                 }
                 this.removeButton.active = this.selectedLabel != -1;
-            }, (button, poseStack, mouseX, mouseY) -> {
-                this.renderTooltip(poseStack, button.getMessage(), mouseX, mouseY);
             }));
         }
         this.navigationButtons[0] = this.addRenderableWidget(new ImageButton(this.leftPos + 147, this.topPos + 80, 20, 20, 180, 166, TEXTURE_LOCATION, button -> {

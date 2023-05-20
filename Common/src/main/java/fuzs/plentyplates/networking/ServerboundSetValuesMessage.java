@@ -1,8 +1,8 @@
 package fuzs.plentyplates.networking;
 
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
-import fuzs.puzzleslib.api.networking.v3.ServerMessageListener;
-import fuzs.puzzleslib.api.networking.v3.ServerboundMessage;
+import fuzs.puzzleslib.api.network.v3.ServerMessageListener;
+import fuzs.puzzleslib.api.network.v3.ServerboundMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

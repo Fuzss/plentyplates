@@ -3,25 +3,24 @@ package fuzs.plentyplates.data;
 import com.google.common.base.Preconditions;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
+import fuzs.puzzleslib.api.data.v1.AbstractModelProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.data.CachedOutput;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraftforge.client.model.generators.*;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class ModBlockStateProvider extends BlockStateProvider {
+public class ModBlockStateProvider extends AbstractModelProvider {
     private final BlockModelProvider blockModels;
 
-    public ModBlockStateProvider(DataGenerator dataGenerator, String modId, ExistingFileHelper fileHelper) {
-        super(dataGenerator, modId, fileHelper);
-        this.blockModels = new UncheckedBlockModelProvider(dataGenerator, modId, fileHelper);
+    public ModBlockStateProvider(PackOutput packOutput, String modId, ExistingFileHelper fileHelper) {
+        super(packOutput, modId, fileHelper);
+        this.blockModels = new UncheckedBlockModelProvider(packOutput, modId, fileHelper);
     }
 
     @Override
@@ -30,20 +29,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
             this.pressurePlateBlock((PressurePlateBlock) material.getPressurePlateBlock(), material.getModelTexture(), material.getTranslucentModelTexture());
             this.itemModels().withExistingParent(this.name(material.getPressurePlateBlock()), this.extendKey(material.getPressurePlateBlock(), ModelProvider.BLOCK_FOLDER));
         }
-    }
-
-    private ResourceLocation key(Block block) {
-        return ForgeRegistries.BLOCKS.getKey(block);
-    }
-
-    private String name(Block block) {
-        return this.key(block).getPath();
-    }
-
-    private ResourceLocation extendKey(Block block, String... extensions) {
-        ResourceLocation loc = this.key(block);
-        extensions = ArrayUtils.add(extensions, loc.getPath());
-        return new ResourceLocation(loc.getNamespace(), String.join("/", extensions));
     }
 
     @Override
@@ -81,14 +66,14 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private static class UncheckedBlockModelProvider extends BlockModelProvider {
         protected final Function<ResourceLocation, BlockModelBuilder> factory;
 
-        public UncheckedBlockModelProvider(DataGenerator dataGenerator, String modId, ExistingFileHelper fileHelper) {
-            super(dataGenerator, modId, fileHelper);
+        public UncheckedBlockModelProvider(PackOutput packOutput, String modId, ExistingFileHelper fileHelper) {
+            super(packOutput, modId, fileHelper);
             this.factory = resourceLocation -> new UncheckedBlockModelBuilder(resourceLocation, fileHelper);
         }
 
         @Override
-        public void run(CachedOutput output) {
-
+        public CompletableFuture<?> run(CachedOutput output) {
+            return CompletableFuture.allOf();
         }
 
         @Override
