@@ -129,13 +129,13 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             }) {
 
                 @Override
-                public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-                    super.renderButton(poseStack, mouseX, mouseY, partialTick);
+                public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+                    super.renderWidget(poseStack, mouseX, mouseY, partialTick);
                     boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
                     if (!settingsValue) {
                         TextureAtlasSprite textureatlassprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
                         RenderSystem.setShaderTexture(0, textureatlassprite.atlasLocation());
-                        blit(poseStack, this.getX() + 2, this.getY() + 2, this.getBlitOffset(), 16, 16, textureatlassprite);
+                        blit(poseStack, this.getX() + 2, this.getY() + 2, 0, 16, 16, textureatlassprite);
                     }
                     if (this.isHoveredOrFocused()) {
                         PressurePlateScreen.this.renderTooltip(poseStack, setting.getComponent(settingsValue), mouseX, mouseY);

@@ -11,5 +11,6 @@
   ],
   "result": {
     "item": "plentyplates:chiseled_stone_bricks_pressure_plate"
-  }
+  },
+  "show_notification": true
 }

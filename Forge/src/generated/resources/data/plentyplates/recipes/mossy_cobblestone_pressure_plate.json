@@ -11,5 +11,6 @@
   ],
   "result": {
     "item": "plentyplates:mossy_cobblestone_pressure_plate"
-  }
+  },
+  "show_notification": true
 }

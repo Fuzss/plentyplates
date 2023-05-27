@@ -39,7 +39,7 @@ public class TranslucentPackResources extends AbstractModPackResources {
             for (int x = 0; x < image.getWidth(); x++) {
                 for (int y = 0; y < image.getHeight(); y++) {
                     int pixel = image.getPixelRGBA(x, y);
-                    int alpha = NativeImage.getA(pixel);
+                    int alpha = getA(pixel);
                     if (alpha != 0) {
                         image.setPixelRGBA(x, y, pixel & 0xFFFFFF | (int) (alpha * 0.25) << 24);
                     }
@@ -47,6 +47,10 @@ public class TranslucentPackResources extends AbstractModPackResources {
             }
             return new ByteArrayInputStream(image.asByteArray());
         }
+    }
+
+    public static int getA(int abgrColor) {
+        return abgrColor >> 24 & 255;
     }
 
     @Override

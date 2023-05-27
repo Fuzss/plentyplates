@@ -11,8 +11,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -29,9 +31,11 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
@@ -54,10 +58,9 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public static final BooleanProperty SHROUDED = BooleanProperty.create("shrouded");
     public static final BooleanProperty SILENT = BooleanProperty.create("silent");
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    protected static final Vec3[] TOUCH_VECTORS = VoxelUtils.makeVectors(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
     private static final Vec3[] SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
     private static final Vec3[] PRESSED_SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
-    protected static final Vec3[] TOUCH_VECTORS = VoxelUtils.makeVectors(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
-
     private final Map<Direction, VoxelShape> shapes = Stream.of(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> {
         return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, SHAPE_VECTORS));
     }));
@@ -71,7 +74,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     private final SensitivityMaterial sensitivityMaterial;
 
     public DirectionalPressurePlateBlock(SensitivityMaterial sensitivityMaterial, Properties properties) {
-        super(Sensitivity.EVERYTHING, properties, SoundEvents.STONE_PRESSURE_PLATE_CLICK_OFF, SoundEvents.STONE_PRESSURE_PLATE_CLICK_ON);
+        super(Sensitivity.EVERYTHING, properties, BlockSetType.STONE);
         this.sensitivityMaterial = sensitivityMaterial;
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP).setValue(SHROUDED, false).setValue(SILENT, false).setValue(LIT, false));
     }
@@ -86,7 +89,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         Direction direction = state.getValue(FACING);
         BlockPos blockPos = pos.relative(direction.getOpposite());
-        return level.getBlockState(blockPos).isFaceSturdy(level, blockPos, direction, SupportType.RIGID) ||  canSupportCenter(level, blockPos, direction);
+        return level.getBlockState(blockPos).isFaceSturdy(level, blockPos, direction, SupportType.RIGID) || canSupportCenter(level, blockPos, direction);
     }
 
     @Override
@@ -114,17 +117,57 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         return null;
     }
 
-    @Override
     protected void playOnSound(LevelAccessor level, BlockPos pos) {
         if (!level.getBlockState(pos).getValue(SILENT)) {
-            super.playOnSound(level, pos);
+            level.playSound((Player) null, pos, BlockSetType.STONE.pressurePlateClickOn(), SoundSource.BLOCKS);
+        }
+    }
+
+    protected void playOffSound(LevelAccessor level, BlockPos pos) {
+        if (!level.getBlockState(pos).getValue(SILENT)) {
+            level.playSound((Player) null, pos, BlockSetType.STONE.pressurePlateClickOff(), SoundSource.BLOCKS);
         }
     }
 
     @Override
-    protected void playOffSound(LevelAccessor level, BlockPos pos) {
-        if (!level.getBlockState(pos).getValue(SILENT)) {
-            super.playOffSound(level, pos);
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        int i = this.getSignalForState(state);
+        if (i > 0) {
+            this.checkPressed((Entity) null, level, pos, state, i);
+        }
+    }
+
+    @Override
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide) {
+            int i = this.getSignalForState(state);
+            if (i == 0) {
+                this.checkPressed(entity, level, pos, state, i);
+            }
+        }
+    }
+
+    protected void checkPressed(@Nullable Entity entity, Level level, BlockPos pos, BlockState state, int currentSignal) {
+        int i = this.getSignalStrength(level, pos);
+        boolean bl = currentSignal > 0;
+        boolean bl2 = i > 0;
+        if (currentSignal != i) {
+            BlockState blockState = this.setSignalForState(state, i);
+            level.setBlock(pos, blockState, 2);
+            this.updateNeighbours(level, pos);
+            level.setBlocksDirty(pos, state, blockState);
+        }
+
+        if (!bl2 && bl) {
+            this.playOffSound(level, pos);
+            level.gameEvent(entity, GameEvent.BLOCK_DEACTIVATE, pos);
+        } else if (bl2 && !bl) {
+            this.playOnSound(level, pos);
+            level.gameEvent(entity, GameEvent.BLOCK_ACTIVATE, pos);
+        }
+
+        if (bl2) {
+            level.scheduleTick(new BlockPos(pos), this, this.getPressedTime());
         }
     }
 
@@ -200,7 +243,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
                     player.openMenu(blockEntity).ifPresent(containerId -> {
-                        PlentyPlates.NETWORKING.sendTo(new ClientboundInitialValuesMessage(containerId, blockEntity.getAllowedValues(), blockEntity.getCurrentValues()), (ServerPlayer) player);
+                        PlentyPlates.NETWORKING.sendTo((ServerPlayer) player, new ClientboundInitialValuesMessage(containerId, blockEntity.getAllowedValues(), blockEntity.getCurrentValues()));
                     });
                 }
             }

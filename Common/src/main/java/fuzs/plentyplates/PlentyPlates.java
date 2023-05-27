@@ -10,6 +10,7 @@ import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
 import fuzs.puzzleslib.api.network.v3.NetworkHandlerV3;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,11 @@ public class PlentyPlates implements ModConstructor {
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock())));
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock())).displayItems((itemDisplayParameters, output) -> {
+            for (Block block : SensitivityMaterial.allBlocks()) {
+                output.accept(block);
+            }
+        }));
     }
 
     public static ResourceLocation id(String path) {
