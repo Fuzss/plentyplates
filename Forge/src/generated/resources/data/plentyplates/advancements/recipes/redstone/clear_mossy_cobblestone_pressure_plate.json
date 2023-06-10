@@ -30,5 +30,6 @@
     "recipes": [
       "plentyplates:clear_mossy_cobblestone_pressure_plate"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

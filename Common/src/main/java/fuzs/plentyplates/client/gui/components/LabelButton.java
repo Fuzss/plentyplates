@@ -1,9 +1,9 @@
 package fuzs.plentyplates.client.gui.components;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -45,16 +45,16 @@ public class LabelButton extends Button {
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Font font = Minecraft.getInstance().font;
         RenderSystem.enableDepthTest();
         if (this.clicked) {
-            fill(poseStack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFF8892C9);
+            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFF8892C9);
         }
         if (!this.truncatedMessage.isEmpty()) {
-            drawString(poseStack, font, this.truncatedMessage, this.getX() + 4, this.getY() + (this.height - 8) / 2, this.isHoveredOrFocused() || this.clicked ? 16777120 : 14737632);
+            guiGraphics.drawString(font, this.truncatedMessage, this.getX() + 4, this.getY() + (this.height - 8) / 2, this.isHoveredOrFocused() || this.clicked ? 16777120 : 14737632);
         } else {
-            drawString(poseStack, font, this.getMessage(), this.getX() + 4, this.getY() + (this.height - 8) / 2, this.isHoveredOrFocused() || this.clicked ? 16777120 : 14737632);
+            guiGraphics.drawString(font, this.getMessage(), this.getX() + 4, this.getY() + (this.height - 8) / 2, this.isHoveredOrFocused() || this.clicked ? 16777120 : 14737632);
         }
     }
 }

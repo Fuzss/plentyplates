@@ -2,7 +2,6 @@ package fuzs.plentyplates.client.gui.screens;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.gui.components.LabelButton;
 import fuzs.plentyplates.networking.ServerboundSetValuesMessage;
@@ -10,13 +9,13 @@ import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -129,16 +128,15 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             }) {
 
                 @Override
-                public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-                    super.renderWidget(poseStack, mouseX, mouseY, partialTick);
+                public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
                     boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
                     if (!settingsValue) {
-                        TextureAtlasSprite textureatlassprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
-                        RenderSystem.setShaderTexture(0, textureatlassprite.atlasLocation());
-                        blit(poseStack, this.getX() + 2, this.getY() + 2, 0, 16, 16, textureatlassprite);
+                        TextureAtlasSprite atlasSprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
+                        guiGraphics.blit(this.getX() + 2, this.getY() + 2, 0, 16, 16, atlasSprite);
                     }
                     if (this.isHoveredOrFocused()) {
-                        PressurePlateScreen.this.renderTooltip(poseStack, setting.getComponent(settingsValue), mouseX, mouseY);
+                        guiGraphics.renderTooltip(PressurePlateScreen.this.font, setting.getComponent(settingsValue), mouseX, mouseY);
                     }
                 }
             });
@@ -251,23 +249,21 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(poseStack);
-        this.renderBg(poseStack, partialTick, mouseX, mouseY);
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        this.renderLabels(poseStack, mouseX, mouseY);
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics);
+        this.renderBg(guiGraphics, partialTick, mouseX, mouseY);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderLabels(guiGraphics, mouseX, mouseY);
     }
 
-    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE_LOCATION);
-        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        this.blit(poseStack, this.leftPos + this.imageWidth - 3 - 27, this.topPos - 24, this.imageWidth, 0, 27, 24);
+        guiGraphics.blit(TEXTURE_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(TEXTURE_LOCATION, this.leftPos + this.imageWidth - 3 - 27, this.topPos - 24, this.imageWidth, 0, 27, 24);
     }
 
-    protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
-        this.font.draw(poseStack, this.title, this.leftPos + (this.imageWidth - this.font.width(this.title)) / 2, this.topPos + 6, 4210752);
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.drawString(this.font, this.title, this.leftPos + (this.imageWidth - this.font.width(this.title)) / 2, this.topPos + 6, 4210752, false);
     }
 
     @Override

@@ -61,5 +61,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "plentyplates:blocks/mossy_cobblestone_pressure_plate"
 }
