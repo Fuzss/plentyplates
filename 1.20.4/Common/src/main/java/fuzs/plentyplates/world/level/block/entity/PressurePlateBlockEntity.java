@@ -63,10 +63,10 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
     public PressurePlateBlockEntity(SensitivityMaterial sensitivityMaterial, BlockPos blockPos, BlockState blockState) {
         this(blockPos, blockState);
-        this.setSensitivityMaterial(sensitivityMaterial);
+        this.initSensitivityMaterial(sensitivityMaterial);
     }
 
-    public void setSensitivityMaterial(SensitivityMaterial sensitivityMaterial) {
+    public void initSensitivityMaterial(SensitivityMaterial sensitivityMaterial) {
         this.sensitivityMaterial = sensitivityMaterial;
         this.dataStorage = new DataStorage<>(sensitivityMaterial.dataProvider.get());
     }
@@ -86,11 +86,15 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public boolean allowedToAccess(Player player) {
-        if (!player.getAbilities().mayBuild) return false;
-        if (!this.getSettingsValue(PressurePlateSetting.LOCKED) && this.owner != null) {
+        if (!player.getAbilities().mayBuild) {
+            return false;
+        } else if (player.getAbilities().instabuild) {
+            return true;
+        } else if (!this.getSettingsValue(PressurePlateSetting.LOCKED) && this.owner != null) {
             return this.owner.equals(player.getUUID());
+        } else {
+            return true;
         }
-        return true;
     }
 
     private void update(PressurePlateSetting setting, boolean value) {
@@ -133,7 +137,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
             this.owner = tag.getUUID(TAG_OWNER);
         }
         this.settings = tag.getByte(TAG_SETTINGS);
-        this.setSensitivityMaterial(SensitivityMaterial.values()[tag.getByte(TAG_MATERIAL)]);
+        this.initSensitivityMaterial(SensitivityMaterial.values()[tag.getByte(TAG_MATERIAL)]);
         this.dataStorage.loadFrom(tag);
     }
 

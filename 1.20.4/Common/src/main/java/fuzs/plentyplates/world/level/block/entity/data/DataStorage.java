@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DataStorage<T> {
     private final DataProvider<T> provider;
@@ -27,11 +28,11 @@ public class DataStorage<T> {
     }
 
     public void setCurrentValues(List<String> values) {
-        this.data = values.stream().map(this.provider::fromString).filter(Objects::nonNull).toList();
+        this.data = values.stream().map(this.provider::fromString).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public List<String> getCurrentValues() {
-        return this.data.stream().map(this.provider::toString).toList();
+        return this.data.stream().map(this.provider::toString).collect(Collectors.toList());
     }
 
     public void loadFrom(CompoundTag tag) {
