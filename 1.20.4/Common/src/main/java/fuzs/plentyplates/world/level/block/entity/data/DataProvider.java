@@ -1,6 +1,7 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
 import com.google.common.collect.ImmutableSet;
+import fuzs.plentyplates.PlentyPlates;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface DataProvider<T> {
-    String TAG_DATA = "Data";
+    String TAG_DATA =  PlentyPlates.id("data").toString();
 
     @Nullable
     T fromString(String value);

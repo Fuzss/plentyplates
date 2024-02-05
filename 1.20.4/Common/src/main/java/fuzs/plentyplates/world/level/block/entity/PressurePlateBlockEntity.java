@@ -1,5 +1,6 @@
 package fuzs.plentyplates.world.level.block.entity;
 
+import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.init.ModRegistry;
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
@@ -9,6 +10,7 @@ import fuzs.plentyplates.world.level.block.entity.data.DataStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,9 +28,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class PressurePlateBlockEntity extends BlockEntity implements MenuProvider {
-    public static final String TAG_SETTINGS = "Settings";
-    public static final String TAG_MATERIAL = "Material";
-    public static final String TAG_OWNER = "Owner";
+    public static final MutableComponent COMPONENT_PRESSURE_PLATE = Component.translatable("container.pressure_plate");
+    public static final String TAG_SETTINGS =  PlentyPlates.id("settings").toString();
+    public static final String TAG_MATERIAL =  PlentyPlates.id("material").toString();
+    public static final String TAG_OWNER = PlentyPlates.id("owner").toString();
 
     private final ContainerData dataAccess = new ContainerData() {
 
@@ -55,7 +58,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     private int settings = PressurePlateSetting.DEFAULT_SETTINGS;
 
     public PressurePlateBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(ModRegistry.PRESSURE_PLATE_BLOCK_ENTITY_TYPE.get(), blockPos, blockState);
+        super(ModRegistry.PRESSURE_PLATE_BLOCK_ENTITY_TYPE.value(), blockPos, blockState);
     }
 
     public PressurePlateBlockEntity(SensitivityMaterial sensitivityMaterial, BlockPos blockPos, BlockState blockState) {
@@ -102,7 +105,7 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("container.pressure_plate");
+        return COMPONENT_PRESSURE_PLATE;
     }
 
     public boolean permits(Entity entity) {

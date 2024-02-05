@@ -3,14 +3,13 @@ package fuzs.plentyplates.world.level.block;
 import net.minecraft.network.chat.Component;
 
 public enum PressurePlateSetting {
-    WHITELIST(true, "whitelist", -1),
-    SHROUDED(true, "shrouded", 3),
-    SILENT(true, "silent", 1),
-    ILLUMINATED(false, "illuminated", 0),
-    LOCKED(true, "locked", 2),
-    BABY(false, "baby", 4);
+    WHITELIST("whitelist", true, -1),
+    SHROUDED("shrouded", true, 3),
+    SILENT("silent", true, 1),
+    ILLUMINATED("illuminated", false, 0),
+    LOCKED("locked", true, 2),
+    BABY("baby", false, 4);
 
-    private static final String TRANSLATION_KEY_PREFIX = "gui.pressure_plate.";
     public static final int DEFAULT_SETTINGS;
 
     private final int textureId;
@@ -18,10 +17,10 @@ public enum PressurePlateSetting {
     private final Component componentOff;
     private final boolean defaultValue;
 
-    PressurePlateSetting(boolean defaultValue, String translationKey, int textureId) {
+    PressurePlateSetting(String name, boolean defaultValue, int textureId) {
         this.textureId = textureId;
-        this.componentOn = Component.translatable(TRANSLATION_KEY_PREFIX + translationKey + ".on");
-        this.componentOff = Component.translatable(TRANSLATION_KEY_PREFIX + translationKey + ".off");
+        this.componentOn = Component.translatable("gui.pressure_plate." + name + ".on");
+        this.componentOff = Component.translatable("gui.pressure_plate." + name + ".off");
         this.defaultValue = defaultValue;
     }
 
@@ -29,8 +28,8 @@ public enum PressurePlateSetting {
         return this.textureId;
     }
 
-    public Component getComponent(boolean on) {
-        return on ? this.componentOn : this.componentOff;
+    public Component getComponent(boolean turnedOn) {
+        return turnedOn ? this.componentOn : this.componentOff;
     }
 
     public static PressurePlateSetting[] defaultValues() {

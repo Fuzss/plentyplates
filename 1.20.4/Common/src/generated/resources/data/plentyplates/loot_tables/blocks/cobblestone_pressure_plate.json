@@ -1,0 +1,66 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "ops": [
+                {
+                  "op": "replace",
+                  "source": "plentyplates:settings",
+                  "target": "BlockEntityTag.plentyplates:settings"
+                }
+              ],
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_nbt",
+              "ops": [
+                {
+                  "op": "replace",
+                  "source": "plentyplates:data",
+                  "target": "BlockEntityTag.plentyplates:data"
+                }
+              ],
+              "source": "block_entity"
+            },
+            {
+              "block": "plentyplates:cobblestone_pressure_plate",
+              "function": "minecraft:copy_state",
+              "properties": [
+                "lit"
+              ]
+            },
+            {
+              "block": "plentyplates:cobblestone_pressure_plate",
+              "function": "minecraft:copy_state",
+              "properties": [
+                "silent"
+              ]
+            },
+            {
+              "block": "plentyplates:cobblestone_pressure_plate",
+              "function": "minecraft:copy_state",
+              "properties": [
+                "shrouded"
+              ]
+            }
+          ],
+          "name": "plentyplates:cobblestone_pressure_plate"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "plentyplates:blocks/cobblestone_pressure_plate"
+}

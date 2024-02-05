@@ -1,7 +1,7 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
 import com.mojang.authlib.GameProfile;
-import fuzs.puzzleslib.api.core.v1.Proxy;
+import fuzs.puzzleslib.api.core.v1.CommonAbstractions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +19,7 @@ public class PlayerDataProvider implements DataProvider<GameProfile> {
     @Nullable
     @Override
     public GameProfile fromString(String value) {
-        return Optional.of(value).filter(Predicate.not(String::isEmpty)).flatMap(Proxy.INSTANCE.getGameServer().getProfileCache()::get).orElse(null);
+        return Optional.of(value).filter(Predicate.not(String::isEmpty)).flatMap(CommonAbstractions.INSTANCE.getMinecraftServer().getProfileCache()::get).orElse(null);
     }
 
     @Override

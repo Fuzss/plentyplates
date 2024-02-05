@@ -1,12 +1,13 @@
 package fuzs.plentyplates.world.level.block;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fuzs.plentyplates.PlentyPlates;
-import fuzs.plentyplates.networking.ClientboundInitialValuesMessage;
+import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
-import fuzs.plentyplates.world.phys.shapes.VoxelUtils;
-import fuzs.puzzleslib.api.core.v1.ModLoaderEnvironment;
 import fuzs.puzzleslib.api.core.v1.Proxy;
+import fuzs.puzzleslib.api.shape.v1.ShapesHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,49 +41,49 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-@SuppressWarnings("deprecation")
 public class DirectionalPressurePlateBlock extends PressurePlateBlock implements SimpleWaterloggedBlock, EntityBlock {
+    public static final MapCodec<PressurePlateBlock> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+        return instance.group(SensitivityMaterial.CODEC.fieldOf("material").forGetter((pressurePlateBlock) -> {
+            return ((DirectionalPressurePlateBlock) pressurePlateBlock).sensitivityMaterial;
+        }), propertiesCodec()).apply(instance, DirectionalPressurePlateBlock::new);
+    });
+    public static final String KEY_PRESSURE_PLATE_ACTIVATED_BY = "block.plentyplates.pressure_plate.activated_by";
+    public static final String KEY_PRESSURE_PLATE_DESCRIPTION = "block.plentyplates.pressure_plate.description";
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty SHROUDED = BooleanProperty.create("shrouded");
     public static final BooleanProperty SILENT = BooleanProperty.create("silent");
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    protected static final Vec3[] TOUCH_VECTORS = VoxelUtils.makeVectors(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
-    private static final Vec3[] SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
-    private static final Vec3[] PRESSED_SHAPE_VECTORS = VoxelUtils.makeVectors(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
-    private final Map<Direction, VoxelShape> shapes = Stream.of(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> {
-        return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, SHAPE_VECTORS));
-    }));
-    private final Map<Direction, VoxelShape> pressedShapes = Stream.of(Direction.values()).collect(Maps.<Direction, Direction, VoxelShape>toImmutableEnumMap(Function.identity(), direction -> {
-        return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, PRESSED_SHAPE_VECTORS));
-    }));
-    private final Map<Direction, AABB> touchAABBs = Stream.of(Direction.values()).collect(Maps.<Direction, Direction, AABB>toImmutableEnumMap(Function.identity(), direction -> {
-        return VoxelUtils.makeCombinedShape(VoxelUtils.rotate(direction, TOUCH_VECTORS)).toAabbs().stream().findAny().orElse(TOUCH_AABB);
-    }));
+    private static final Map<Direction, VoxelShape> SHAPES = ShapesHelper.rotate(AABB);
+    private static final Map<Direction, VoxelShape> PRESSED_SHAPES = ShapesHelper.rotate(PRESSED_AABB);
+    private static final Map<Direction, AABB> TOUCH_AABBS = ShapesHelper.rotate(Shapes.create(TOUCH_AABB)).entrySet().stream().collect(Maps.toImmutableEnumMap(Map.Entry::getKey, entry -> entry.getValue().toAabbs().iterator().next()));
 
     private final SensitivityMaterial sensitivityMaterial;
 
     public DirectionalPressurePlateBlock(SensitivityMaterial sensitivityMaterial, Properties properties) {
-        super(Sensitivity.EVERYTHING, properties, BlockSetType.STONE);
+        super(BlockSetType.STONE, properties);
         this.sensitivityMaterial = sensitivityMaterial;
         this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP).setValue(SHROUDED, false).setValue(SILENT, false).setValue(LIT, false));
     }
 
     @Override
+    public MapCodec<PressurePlateBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         Direction facing = state.getValue(FACING);
-        return this.getSignalForState(state) > 0 ? this.pressedShapes.get(facing) : this.shapes.get(facing);
+        return this.getSignalForState(state) > 0 ? PRESSED_SHAPES.get(facing) : SHAPES.get(facing);
     }
 
     @Override
@@ -119,13 +120,13 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     protected void playOnSound(LevelAccessor level, BlockPos pos) {
         if (!level.getBlockState(pos).getValue(SILENT)) {
-            level.playSound((Player) null, pos, BlockSetType.STONE.pressurePlateClickOn(), SoundSource.BLOCKS);
+            level.playSound(null, pos, BlockSetType.STONE.pressurePlateClickOn(), SoundSource.BLOCKS);
         }
     }
 
     protected void playOffSound(LevelAccessor level, BlockPos pos) {
         if (!level.getBlockState(pos).getValue(SILENT)) {
-            level.playSound((Player) null, pos, BlockSetType.STONE.pressurePlateClickOff(), SoundSource.BLOCKS);
+            level.playSound(null, pos, BlockSetType.STONE.pressurePlateClickOff(), SoundSource.BLOCKS);
         }
     }
 
@@ -133,7 +134,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         int i = this.getSignalForState(state);
         if (i > 0) {
-            this.checkPressed((Entity) null, level, pos, state, i);
+            this.checkPressed(null, level, pos, state, i);
         }
     }
 
@@ -174,7 +175,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     @Override
     protected int getSignalStrength(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        AABB aABB = this.touchAABBs.get(state.getValue(FACING)).move(pos);
+        AABB aABB = TOUCH_AABBS.get(state.getValue(FACING)).move(pos);
         List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getClazz(), aABB, EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(entity -> {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 return blockEntity.permits(entity);
@@ -224,11 +225,14 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.activated_by", Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
-        if (!ModLoaderEnvironment.INSTANCE.isClient()) return;
-        Component shiftComponent = Component.empty().append(Proxy.INSTANCE.getKeyMappingComponent("key.sneak")).withStyle(ChatFormatting.LIGHT_PURPLE);
-        Component useComponent = Component.empty().append(Proxy.INSTANCE.getKeyMappingComponent("key.use")).withStyle(ChatFormatting.LIGHT_PURPLE);
-        tooltip.add(Component.translatable("block.plentyplates.pressure_plate.description", shiftComponent, useComponent).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY, Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
+        if (level != null) {
+            Component shiftComponent = Component.keybind("key.sneak").withStyle(ChatFormatting.LIGHT_PURPLE);
+            Component useComponent = Component.keybind("key.use").withStyle(ChatFormatting.LIGHT_PURPLE);
+            Component component = Component.translatable(KEY_PRESSURE_PLATE_DESCRIPTION, shiftComponent, useComponent)
+                    .withStyle(ChatFormatting.GRAY);
+            tooltip.addAll(Proxy.INSTANCE.splitTooltipLines(component));
+        }
     }
 
     @Nullable

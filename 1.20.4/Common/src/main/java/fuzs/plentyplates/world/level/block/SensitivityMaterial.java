@@ -10,6 +10,7 @@ import fuzs.plentyplates.world.level.block.entity.data.RegistryDataProvider;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Sheep;
@@ -24,7 +25,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public enum SensitivityMaterial {
+public enum SensitivityMaterial implements StringRepresentable {
     OBSIDIAN("obsidian", Blocks.OBSIDIAN, Player.class, new ResourceLocation("block/obsidian"), PlayerDataProvider::new),
     COBBLESTONE("cobblestone", Blocks.COBBLESTONE, Entity.class, new ResourceLocation("block/cobblestone"), () -> RegistryDataProvider.entityType(false)),
     MOSSY_COBBLESTONE("mossy_cobblestone", Blocks.MOSSY_COBBLESTONE, ItemEntity.class, new ResourceLocation("block/mossy_cobblestone"), RegistryDataProvider::item),
@@ -32,18 +33,19 @@ public enum SensitivityMaterial {
     MOSSY_STONE_BRICKS("mossy_stone_bricks", Blocks.MOSSY_STONE_BRICKS, Villager.class, new ResourceLocation("block/mossy_stone_bricks"), RegistryDataProvider::villagerProfession, PressurePlateSetting.BABY),
     CHISELED_STONE_BRICKS("chiseled_stone_bricks", Blocks.CHISELED_STONE_BRICKS, Sheep.class, new ResourceLocation("block/chiseled_stone_bricks"), ColorDataProvider::new);
 
-    private final ResourceLocation id;
+    public static final StringRepresentable.EnumCodec<SensitivityMaterial> CODEC = StringRepresentable.fromEnum(SensitivityMaterial::values);
+
+    private final String name;
     private final Block materialBlock;
     private final Class<? extends Entity> clazz;
     private final ResourceLocation texture;
     private final PressurePlateSetting[] settings;
     public final Supplier<DataProvider<?>> dataProvider;
-
     private Block pressurePlateBlock;
     private MenuType<PressurePlateMenu> menuType;
 
     SensitivityMaterial(String name, Block materialBlock, Class<? extends Entity> clazz, ResourceLocation texture, Supplier<DataProvider<?>> dataProvider, PressurePlateSetting... settings) {
-        this.id = PlentyPlates.id(name + "_pressure_plate");
+        this.name = name;
         this.materialBlock = materialBlock;
         this.clazz = clazz;
         this.texture = texture;
@@ -69,7 +71,7 @@ public enum SensitivityMaterial {
     }
 
     public ResourceLocation id() {
-        return this.id;
+        return PlentyPlates.id(this.name + "_pressure_plate");
     }
 
     public String translationKey() {
@@ -97,6 +99,11 @@ public enum SensitivityMaterial {
 
     public ResourceLocation getTranslucentTextureFile() {
         return expandToFile(this.getTranslucentModelTexture());
+    }
+
+    @Override
+    public String getSerializedName() {
+        return this.name;
     }
 
     private static ResourceLocation expandToFile(ResourceLocation texture) {

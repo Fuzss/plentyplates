@@ -3,16 +3,17 @@ package fuzs.plentyplates.client.gui.screens;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fuzs.plentyplates.PlentyPlates;
+import fuzs.plentyplates.client.gui.components.GuiGraphicsHelper;
 import fuzs.plentyplates.client.gui.components.LabelButton;
-import fuzs.plentyplates.networking.ServerboundSetValuesMessage;
+import fuzs.plentyplates.network.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
+import fuzs.puzzleslib.api.client.gui.v2.components.SpritelessImageButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -59,19 +60,11 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (this.editBox != null && this.editBox.visible) {
-            this.editBox.tick();
-        }
-    }
-
-    @Override
     protected void init() {
         super.init();
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
-        this.addRenderableWidget(new ImageButton(this.leftPos + this.imageWidth - 3 - 21, this.topPos - 18, 15, 15, 203, 0, TEXTURE_LOCATION, button -> {
+        this.addRenderableWidget(new SpritelessImageButton(this.leftPos + this.imageWidth - 3 - 21, this.topPos - 18, 15, 15, 203, 0, TEXTURE_LOCATION, button -> {
             this.onClose();
         }));
         this.addWhitelistButtons();
@@ -98,7 +91,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
         for (int i = 0; i < this.whitelistButtons.length; i++) {
             int me = i;
             int other = (i + 1) % 2;
-            this.whitelistButtons[i] = this.addRenderableWidget(new ImageButton(posX, posY, 20, 20, i * 20, 166, 20, TEXTURE_LOCATION, 256, 256, button -> {
+            this.whitelistButtons[i] = this.addRenderableWidget(new SpritelessImageButton(posX, posY, 20, 20, i * 20, 166, 20, TEXTURE_LOCATION, 256, 256, button -> {
                 this.sendButtonClick(0);
                 this.whitelistButtons[me].visible = false;
                 this.whitelistButtons[other].visible = true;
@@ -123,9 +116,16 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
         int i = 0;
         for (PressurePlateSetting setting : settings) {
             if (i++ == 0) continue;
-            this.addRenderableWidget(new ImageButton(posX + (i - 2) * 30, posY, 20, 20, setting.getTextureId() * 20 + 40, 166, TEXTURE_LOCATION, button -> {
+            this.addRenderableWidget(new SpritelessImageButton(posX + (i - 2) * 30, posY, 20, 20, setting.getTextureId() * 20 + 40, 166, TEXTURE_LOCATION, button -> {
                 this.sendButtonClick(setting.ordinal());
+                boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
+                button.setTooltip(Tooltip.create(setting.getComponent(settingsValue)));
             }) {
+
+                {
+                    boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
+                    this.setTooltip(Tooltip.create(setting.getComponent(settingsValue)));
+                }
 
                 @Override
                 public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -134,9 +134,6 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                     if (!settingsValue) {
                         TextureAtlasSprite atlasSprite = PressurePlateScreen.this.minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BARRIER_LOCATION);
                         guiGraphics.blit(this.getX() + 2, this.getY() + 2, 0, 16, 16, atlasSprite);
-                    }
-                    if (this.isHoveredOrFocused()) {
-                        guiGraphics.renderTooltip(PressurePlateScreen.this.font, setting.getComponent(settingsValue), mouseX, mouseY);
                     }
                 }
             });
@@ -169,7 +166,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             }
             this.editBox.setSuggestion(suggestion);
         });
-        this.confirmButton = this.addRenderableWidget(new ImageButton(this.leftPos + 147, this.topPos + 50, 20, 20, 140, 166, TEXTURE_LOCATION, button -> {
+        this.confirmButton = this.addRenderableWidget(new SpritelessImageButton(this.leftPos + 147, this.topPos + 50, 20, 20, 140, 166, TEXTURE_LOCATION, button -> {
             String value = this.editBox.getValue();
             if (this.isValidInput(value)) {
                 this.currentValues.add(value);
@@ -179,7 +176,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             this.editBox.setValue("");
         }));
         this.confirmButton.active = false;
-        this.removeButton = this.addRenderableWidget(new ImageButton(this.leftPos + 147, this.topPos + 106, 20, 20, 160, 166, TEXTURE_LOCATION, button -> {
+        this.removeButton = this.addRenderableWidget(new SpritelessImageButton(this.leftPos + 147, this.topPos + 106, 20, 20, 160, 166, TEXTURE_LOCATION, button -> {
             if (this.selectedLabel != -1) {
                 int index = this.currentValuesPage * VALUES_PER_PAGE + this.selectedLabel;
                 if (index >= 0 && index < this.currentValues.size()) {
@@ -203,11 +200,11 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 this.removeButton.active = this.selectedLabel != -1;
             }));
         }
-        this.navigationButtons[0] = this.addRenderableWidget(new ImageButton(this.leftPos + 147, this.topPos + 80, 20, 20, 180, 166, TEXTURE_LOCATION, button -> {
+        this.navigationButtons[0] = this.addRenderableWidget(new SpritelessImageButton(this.leftPos + 147, this.topPos + 80, 20, 20, 180, 166, TEXTURE_LOCATION, button -> {
             this.currentValuesPage--;
             this.rebuildListView(false);
         }));
-        this.navigationButtons[1] = this.addRenderableWidget(new ImageButton(this.leftPos + 147, this.topPos + 132, 20, 20, 200, 166, TEXTURE_LOCATION, button -> {
+        this.navigationButtons[1] = this.addRenderableWidget(new SpritelessImageButton(this.leftPos + 147, this.topPos + 132, 20, 20, 200, 166, TEXTURE_LOCATION, button -> {
             this.currentValuesPage++;
             this.rebuildListView(false);
         }));
@@ -250,26 +247,31 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(guiGraphics);
-        this.renderBg(guiGraphics, partialTick, mouseX, mouseY);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        this.renderLabels(guiGraphics, mouseX, mouseY);
+        GuiGraphicsHelper.fillFrame(guiGraphics, this.editBox.getX(), this.editBox.getY(), this.editBox.getWidth(), this.editBox.getHeight(), 1,
+                0xFF000000
+        );
+        if (!this.editBox.isFocused()) {
+            GuiGraphicsHelper.fillFrame(guiGraphics, this.editBox.getX() - 1, this.editBox.getY() - 1, this.editBox.getWidth() + 2, this.editBox.getHeight() + 2, 1,
+                    0xFFA0A0A0
+            );
+        }
+        guiGraphics.drawString(this.font, this.title, this.leftPos + (this.imageWidth - this.font.width(this.title)) / 2, this.topPos + 6, 4210752, false);
     }
 
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.blit(TEXTURE_LOCATION, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         guiGraphics.blit(TEXTURE_LOCATION, this.leftPos + this.imageWidth - 3 - 27, this.topPos - 24, this.imageWidth, 0, 27, 24);
     }
 
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.leftPos + (this.imageWidth - this.font.width(this.title)) / 2, this.topPos + 6, 4210752, false);
-    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_ESCAPE) {
+        if (keyCode == InputConstants.KEY_ESCAPE && this.shouldCloseOnEsc()) {
             this.minecraft.player.closeContainer();
+            return true;
         }
 
         if (keyCode == InputConstants.KEY_TAB && this.editBox.canConsumeInput()) {

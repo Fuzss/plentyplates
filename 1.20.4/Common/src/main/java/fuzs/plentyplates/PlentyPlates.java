@@ -1,8 +1,8 @@
 package fuzs.plentyplates;
 
 import fuzs.plentyplates.init.ModRegistry;
-import fuzs.plentyplates.networking.ClientboundInitialValuesMessage;
-import fuzs.plentyplates.networking.ServerboundSetValuesMessage;
+import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
+import fuzs.plentyplates.network.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
@@ -19,7 +19,9 @@ public class PlentyPlates implements ModConstructor {
     public static final String MOD_NAME = "Plenty Plates";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static final NetworkHandlerV3 NETWORKING = NetworkHandlerV3.builder(MOD_ID).registerClientbound(ClientboundInitialValuesMessage.class).registerServerbound(ServerboundSetValuesMessage.class);
+    public static final NetworkHandlerV3 NETWORKING = NetworkHandlerV3.builder(MOD_ID)
+            .registerClientbound(ClientboundInitialValuesMessage.class)
+            .registerServerbound(ServerboundSetValuesMessage.class);
 
     @Override
     public void onConstructMod() {
@@ -28,7 +30,9 @@ public class PlentyPlates implements ModConstructor {
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID, () -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock())).displayItems((itemDisplayParameters, output) -> {
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID,
+                () -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock())
+        ).displayItems((itemDisplayParameters, output) -> {
             for (Block block : SensitivityMaterial.allBlocks()) {
                 output.accept(block);
             }
