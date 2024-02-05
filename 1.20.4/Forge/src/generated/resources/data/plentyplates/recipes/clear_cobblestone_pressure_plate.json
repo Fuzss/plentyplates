@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "plentyplates:cobblestone_pressure_plate"
+    }
+  ],
+  "result": {
+    "item": "plentyplates:cobblestone_pressure_plate"
+  }
+}

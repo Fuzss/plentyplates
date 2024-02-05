@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "plentyplates:chiseled_stone_bricks_pressure_plate"
+    }
+  ],
+  "result": {
+    "item": "plentyplates:chiseled_stone_bricks_pressure_plate"
+  }
+}

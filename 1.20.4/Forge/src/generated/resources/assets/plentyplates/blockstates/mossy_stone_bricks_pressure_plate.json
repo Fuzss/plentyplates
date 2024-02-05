@@ -1,0 +1,108 @@
+{
+  "variants": {
+    "facing=down,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate",
+      "x": 180
+    },
+    "facing=down,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate",
+      "x": 180
+    },
+    "facing=down,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down",
+      "x": 180
+    },
+    "facing=down,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down",
+      "x": 180
+    },
+    "facing=east,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate",
+      "x": 90
+    },
+    "facing=north,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate",
+      "x": 90
+    },
+    "facing=north,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down",
+      "x": 90
+    },
+    "facing=north,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down",
+      "x": 90
+    },
+    "facing=south,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate"
+    },
+    "facing=up,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate"
+    },
+    "facing=up,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down"
+    },
+    "facing=up,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down"
+    },
+    "facing=west,powered=false,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,powered=false,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,powered=true,shrouded=false": {
+      "model": "plentyplates:block/mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,powered=true,shrouded=true": {
+      "model": "plentyplates:block/shrouded_mossy_stone_bricks_pressure_plate_down",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
