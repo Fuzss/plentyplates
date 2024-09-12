@@ -3,12 +3,13 @@ package fuzs.plentyplates.client.gui.screens;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fuzs.plentyplates.PlentyPlates;
-import fuzs.plentyplates.client.gui.components.GuiGraphicsHelper;
 import fuzs.plentyplates.client.gui.components.LabelButton;
 import fuzs.plentyplates.network.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
+import fuzs.puzzleslib.api.client.gui.v2.components.GuiGraphicsHelper;
 import fuzs.puzzleslib.api.client.gui.v2.components.SpritelessImageButton;
+import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
 
 public class PressurePlateScreen extends Screen implements MenuAccess<PressurePlateMenu>, ContainerListener {
     public static final ResourceLocation TEXTURE_LOCATION = PlentyPlates.id("textures/gui/pressure_plate.png");
-    private static final ResourceLocation BARRIER_LOCATION = new ResourceLocation("item/barrier");
+    private static final ResourceLocation BARRIER_LOCATION = ResourceLocationHelper.withDefaultNamespace("item/barrier");
     private static final int VALUES_PER_PAGE = 7;
 
     private final PressurePlateMenu menu;

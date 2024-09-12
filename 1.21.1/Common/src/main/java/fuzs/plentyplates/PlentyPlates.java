@@ -6,8 +6,9 @@ import fuzs.plentyplates.network.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.CreativeModeTabContext;
+import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
 import fuzs.puzzleslib.api.item.v2.CreativeModeTabConfigurator;
-import fuzs.puzzleslib.api.network.v3.NetworkHandlerV3;
+import fuzs.puzzleslib.api.network.v3.NetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -19,7 +20,7 @@ public class PlentyPlates implements ModConstructor {
     public static final String MOD_NAME = "Plenty Plates";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static final NetworkHandlerV3 NETWORKING = NetworkHandlerV3.builder(MOD_ID)
+    public static final NetworkHandler NETWORKING = NetworkHandler.builder(MOD_ID)
             .registerClientbound(ClientboundInitialValuesMessage.class)
             .registerServerbound(ServerboundSetValuesMessage.class);
 
@@ -40,6 +41,6 @@ public class PlentyPlates implements ModConstructor {
     }
 
     public static ResourceLocation id(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocationHelper.fromNamespaceAndPath(MOD_ID, path);
     }
 }

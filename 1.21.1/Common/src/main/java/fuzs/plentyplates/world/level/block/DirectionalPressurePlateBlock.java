@@ -16,11 +16,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -224,14 +224,14 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY, Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
-        if (level != null) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY, Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
+        if (context != Item.TooltipContext.EMPTY) {
             Component shiftComponent = Component.keybind("key.sneak").withStyle(ChatFormatting.LIGHT_PURPLE);
             Component useComponent = Component.keybind("key.use").withStyle(ChatFormatting.LIGHT_PURPLE);
             Component component = Component.translatable(KEY_PRESSURE_PLATE_DESCRIPTION, shiftComponent, useComponent)
                     .withStyle(ChatFormatting.GRAY);
-            tooltip.addAll(Proxy.INSTANCE.splitTooltipLines(component));
+            tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(component));
         }
     }
 
@@ -242,7 +242,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (player.isSecondaryUseActive()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
@@ -251,8 +251,10 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
                     });
                 }
             }
+
             return InteractionResult.sidedSuccess(level.isClientSide);
+        } else {
+            return InteractionResult.PASS;
         }
-        return InteractionResult.PASS;
     }
 }

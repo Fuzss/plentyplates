@@ -1,9 +1,14 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
+import com.google.common.base.Predicates;
+import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -16,73 +21,95 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class RegistryDataProvider<T> implements DataProvider<T> {
-    private final Registry<T> registry;
-    private final Function<Entity, T> extractor;
-    private final Predicate<T> filter;
+public class RegistryDataProvider<T> implements DataProvider<Holder<T>> {
+    private final ResourceKey<Registry<T>> registryKey;
+    private final Function<Entity, Holder<T>> entityExtractor;
+    private final Predicate<Holder<T>> entryFilter;
 
-    public RegistryDataProvider(Registry<T> registry, Function<Entity, T> extractor, Predicate<T> filter) {
-        this.registry = registry;
-        this.extractor = extractor;
-        this.filter = filter;
+    public RegistryDataProvider(ResourceKey<Registry<T>> registryKey, Function<Entity, Holder<T>> entityExtractor, Predicate<Holder<T>> entryFilter) {
+        this.registryKey = registryKey;
+        this.entityExtractor = entityExtractor;
+        this.entryFilter = entryFilter;
     }
 
     public static RegistryDataProvider<EntityType<?>> entityType(boolean filterMisc) {
-        return new RegistryDataProvider<>(BuiltInRegistries.ENTITY_TYPE, Entity::getType, entityType -> !filterMisc || entityType.getCategory() != MobCategory.MISC);
+        return new RegistryDataProvider<>(Registries.ENTITY_TYPE, (Entity entity) -> entity.getType().builtInRegistryHolder(),
+                (Holder<EntityType<?>> entityType) -> {
+                    return !filterMisc || entityType.value().getCategory() != MobCategory.MISC;
+                }
+        );
     }
 
     public static RegistryDataProvider<Item> item() {
-        return new RegistryDataProvider<>(BuiltInRegistries.ITEM, entity -> entity instanceof ItemEntity item ? item.getItem().getItem() : Items.AIR, item -> item != Items.AIR);
+        return new RegistryDataProvider<>(Registries.ITEM, (Entity entity) -> {
+            Item item;
+            if (entity instanceof ItemEntity itemEntity) {
+                item = itemEntity.getItem().getItem();
+            } else {
+                item = Items.AIR;
+            }
+
+            return item.builtInRegistryHolder();
+        }, (Holder<Item> item) -> item.value() != Items.AIR);
     }
 
     public static RegistryDataProvider<VillagerProfession> villagerProfession() {
-        return new RegistryDataProvider<>(BuiltInRegistries.VILLAGER_PROFESSION, entity -> {
+        return new RegistryDataProvider<>(Registries.VILLAGER_PROFESSION, (Entity entity) -> {
             if (entity instanceof Villager villager) {
-                return villager.getVillagerData().getProfession();
+                VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
+                Registry<VillagerProfession> registry = villager.registryAccess().registryOrThrow(
+                        Registries.VILLAGER_PROFESSION);
+                return registry.wrapAsHolder(villagerProfession);
+            } else {
+                return null;
             }
+        }, Predicates.alwaysTrue());
+    }
+
+    @Nullable
+    @Override
+    public Holder<T> fromString(String value, HolderLookup.Provider registries) {
+        ResourceLocation resourceLocation = ResourceLocationHelper.tryParse(value);
+        if (resourceLocation != null) {
+            ResourceKey<T> resourceKey = ResourceKey.create(this.registryKey, resourceLocation);
+            Optional<Holder.Reference<T>> optional = registries.lookupOrThrow(this.registryKey).get(resourceKey);
+            return optional.orElse(null);
+        } else {
             return null;
-        }, profession -> true);
-    }
-
-    @Nullable
-    @Override
-    public T fromString(String value) {
-        ResourceLocation resourceLocation = ResourceLocation.tryParse(value);
-        if (resourceLocation != null && this.registry.containsKey(resourceLocation)) {
-            return this.registry.get(resourceLocation);
         }
-        return null;
     }
 
     @Override
-    public String toString(T value) {
-        return this.registry.getKey(value).toString();
+    public String toString(Holder<T> value, HolderLookup.Provider registries) {
+        return value.unwrapKey().map(ResourceKey::location).map(ResourceLocation::toString).orElseThrow();
     }
 
     @Override
-    public List<? extends T> getAllValues() {
-        return this.registry.stream().filter(this.filter).toList();
+    public List<? extends Holder<T>> getAllValues(HolderLookup.Provider registries) {
+        return registries.lookupOrThrow(this.registryKey).listElements().filter(this.entryFilter).toList();
     }
 
     @Override
-    public T fromTag(Tag tag) {
+    public Holder<T> fromTag(Tag tag, HolderLookup.Provider registries) {
         if (tag.getId() == Tag.TAG_STRING) {
-            return this.fromString(tag.getAsString());
+            return this.fromString(tag.getAsString(), registries);
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override
-    public Tag toTag(T value) {
-        return StringTag.valueOf(this.toString(value));
+    public Tag toTag(Holder<T> value, HolderLookup.Provider registries) {
+        return StringTag.valueOf(this.toString(value, registries));
     }
 
     @Nullable
     @Override
-    public T fromEntity(Entity entity) {
-        return this.extractor.apply(entity);
+    public Holder<T> fromEntity(Entity entity) {
+        return this.entityExtractor.apply(entity);
     }
 }

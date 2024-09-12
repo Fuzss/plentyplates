@@ -1,5 +1,7 @@
 package fuzs.plentyplates.world.level.block.entity.data;
 
+import fuzs.puzzleslib.api.core.v1.utility.NbtSerializable;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 
@@ -8,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class DataStorage<T> {
+public class DataStorage<T> implements NbtSerializable {
     private final DataProvider<T> provider;
     private List<T> data = List.of();
 
@@ -23,23 +25,25 @@ public class DataStorage<T> {
         return this.data.contains(providedValue) == whitelist;
     }
 
-    public Collection<String> getAllowedValues() {
-        return this.provider.getSerializedValues();
+    public Collection<String> getAllowedValues(HolderLookup.Provider registries) {
+        return this.provider.getSerializedValues(registries);
     }
 
-    public void setCurrentValues(List<String> values) {
-        this.data = values.stream().map(this.provider::fromString).filter(Objects::nonNull).collect(Collectors.toList());
+    public void setCurrentValues(List<String> values, HolderLookup.Provider registries) {
+        this.data = values.stream().map(value -> this.provider.fromString(value, registries)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public List<String> getCurrentValues() {
-        return this.data.stream().map(this.provider::toString).collect(Collectors.toList());
+    public List<String> getCurrentValues(HolderLookup.Provider registries) {
+        return this.data.stream().map(value -> this.provider.toString(value, registries)).collect(Collectors.toList());
     }
 
-    public void loadFrom(CompoundTag tag) {
-        this.data = this.provider.loadFrom(tag);
+    @Override
+    public void read(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        this.data = this.provider.loadFrom(compoundTag, registries);
     }
 
-    public void saveTo(CompoundTag tag) {
-        this.provider.saveTo(tag, this.data);
+    @Override
+    public void write(CompoundTag compoundTag, HolderLookup.Provider registries) {
+        this.provider.saveTo(compoundTag, this.data, registries);
     }
 }

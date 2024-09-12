@@ -8,6 +8,7 @@ import fuzs.plentyplates.world.level.block.PressurePlateSetting;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.plentyplates.world.level.block.entity.data.DataStorage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -118,38 +119,38 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
     }
 
     public Collection<String> getAllowedValues() {
-        return this.dataStorage.getAllowedValues();
+        return this.dataStorage.getAllowedValues(this.getLevel().registryAccess());
     }
 
     public void setCurrentValues(List<String> values) {
-        this.dataStorage.setCurrentValues(values);
+        this.dataStorage.setCurrentValues(values, this.getLevel().registryAccess());
         this.setChanged();
     }
 
     public List<String> getCurrentValues() {
-        return this.dataStorage.getCurrentValues();
+        return this.dataStorage.getCurrentValues(this.getLevel().registryAccess());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (tag.contains(TAG_OWNER)) {
             this.owner = tag.getUUID(TAG_OWNER);
         }
         this.settings = tag.getByte(TAG_SETTINGS);
         this.initSensitivityMaterial(SensitivityMaterial.values()[tag.getByte(TAG_MATERIAL)]);
-        this.dataStorage.loadFrom(tag);
+        this.dataStorage.read(tag, registries);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (this.owner != null) {
             tag.putUUID(TAG_OWNER, this.owner);
         }
         tag.putByte(TAG_SETTINGS, (byte) this.settings);
         tag.putByte(TAG_MATERIAL, (byte) this.sensitivityMaterial.ordinal());
-        this.dataStorage.saveTo(tag);
+        this.dataStorage.write(tag, registries);
     }
 
     @Override

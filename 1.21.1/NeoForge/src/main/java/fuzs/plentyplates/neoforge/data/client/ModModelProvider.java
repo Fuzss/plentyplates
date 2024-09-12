@@ -3,8 +3,9 @@ package fuzs.plentyplates.neoforge.data.client;
 import com.google.common.base.Preconditions;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
+import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
 import fuzs.puzzleslib.neoforge.api.data.v2.client.AbstractModelProvider;
-import fuzs.puzzleslib.neoforge.api.data.v2.core.ForgeDataProviderContext;
+import fuzs.puzzleslib.neoforge.api.data.v2.core.NeoForgeDataProviderContext;
 import net.minecraft.core.Direction;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 public class ModModelProvider extends AbstractModelProvider {
     private final BlockModelProvider blockModels;
 
-    public ModModelProvider(ForgeDataProviderContext context) {
+    public ModModelProvider(NeoForgeDataProviderContext context) {
         super(context);
         this.blockModels = new UncheckedBlockModelProvider(context.getPackOutput(), context.getModId(), context.getFileHelper());
     }
@@ -85,7 +86,7 @@ public class ModModelProvider extends AbstractModelProvider {
         @Override
         public BlockModelBuilder getBuilder(String path) {
             Preconditions.checkNotNull(path, "Path must not be null");
-            ResourceLocation outputLoc = this.extendWithFolder(path.contains(":") ? new ResourceLocation(path) : new ResourceLocation(this.modid, path));
+            ResourceLocation outputLoc = this.extendWithFolder(path.contains(":") ? ResourceLocationHelper.withDefaultNamespace(path) : ResourceLocationHelper.fromNamespaceAndPath(this.modid, path));
             this.existingFileHelper.trackGenerated(outputLoc, MODEL);
             // replace with our custom factory
             return this.generatedModels.computeIfAbsent(outputLoc, this.factory);
@@ -95,7 +96,7 @@ public class ModModelProvider extends AbstractModelProvider {
             if (rl.getPath().contains("/")) {
                 return rl;
             }
-            return new ResourceLocation(rl.getNamespace(), this.folder + "/" + rl.getPath());
+            return ResourceLocationHelper.fromNamespaceAndPath(rl.getNamespace(), this.folder + "/" + rl.getPath());
         }
     }
 
