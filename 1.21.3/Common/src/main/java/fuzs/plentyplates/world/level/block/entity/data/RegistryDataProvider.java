@@ -37,11 +37,11 @@ public class RegistryDataProvider<T> implements DataProvider<Holder<T>> {
     }
 
     public static RegistryDataProvider<EntityType<?>> entityType(boolean filterMisc) {
-        return new RegistryDataProvider<>(Registries.ENTITY_TYPE, (Entity entity) -> entity.getType().builtInRegistryHolder(),
+        return new RegistryDataProvider<>(Registries.ENTITY_TYPE,
+                (Entity entity) -> entity.getType().builtInRegistryHolder(),
                 (Holder<EntityType<?>> entityType) -> {
                     return !filterMisc || entityType.value().getCategory() != MobCategory.MISC;
-                }
-        );
+                });
     }
 
     public static RegistryDataProvider<Item> item() {
@@ -61,8 +61,8 @@ public class RegistryDataProvider<T> implements DataProvider<Holder<T>> {
         return new RegistryDataProvider<>(Registries.VILLAGER_PROFESSION, (Entity entity) -> {
             if (entity instanceof Villager villager) {
                 VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
-                Registry<VillagerProfession> registry = villager.registryAccess().registryOrThrow(
-                        Registries.VILLAGER_PROFESSION);
+                Registry<VillagerProfession> registry = villager.registryAccess()
+                        .lookupOrThrow(Registries.VILLAGER_PROFESSION);
                 return registry.wrapAsHolder(villagerProfession);
             } else {
                 return null;

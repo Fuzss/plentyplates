@@ -73,7 +73,7 @@ public enum SensitivityMaterial implements StringRepresentable {
     public Block getPressurePlateBlock() {
         if (this.pressurePlateBlock == null) {
             Preconditions.checkArgument(BuiltInRegistries.BLOCK.containsKey(this.id()));
-            this.pressurePlateBlock = BuiltInRegistries.BLOCK.get(this.id());
+            this.pressurePlateBlock = BuiltInRegistries.BLOCK.getValue(this.id());
         }
         return this.pressurePlateBlock;
     }
@@ -82,7 +82,7 @@ public enum SensitivityMaterial implements StringRepresentable {
     public MenuType<PressurePlateMenu> getMenuType() {
         if (this.menuType == null) {
             Preconditions.checkArgument(BuiltInRegistries.MENU.containsKey(this.id()));
-            this.menuType = (MenuType<PressurePlateMenu>) BuiltInRegistries.MENU.get(this.id());
+            this.menuType = (MenuType<PressurePlateMenu>) BuiltInRegistries.MENU.getValue(this.id());
         }
         return this.menuType;
     }

@@ -7,7 +7,9 @@ import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.puzzleslib.api.core.v1.Proxy;
-import fuzs.puzzleslib.api.shape.v1.ShapesHelper;
+import fuzs.puzzleslib.api.network.v3.PlayerSet;
+import fuzs.puzzleslib.api.util.v1.InteractionResultHelper;
+import fuzs.puzzleslib.api.util.v1.ShapesHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,10 +26,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,7 +34,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -59,20 +58,28 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public static final String KEY_PRESSURE_PLATE_ACTIVATED_BY = "block.plentyplates.pressure_plate.activated_by";
     public static final String KEY_PRESSURE_PLATE_DESCRIPTION = "block.plentyplates.pressure_plate.description";
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty SHROUDED = BooleanProperty.create("shrouded");
     public static final BooleanProperty SILENT = BooleanProperty.create("silent");
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     private static final Map<Direction, VoxelShape> SHAPES = ShapesHelper.rotate(AABB);
     private static final Map<Direction, VoxelShape> PRESSED_SHAPES = ShapesHelper.rotate(PRESSED_AABB);
-    private static final Map<Direction, AABB> TOUCH_AABBS = ShapesHelper.rotate(Shapes.create(TOUCH_AABB)).entrySet().stream().collect(Maps.toImmutableEnumMap(Map.Entry::getKey, entry -> entry.getValue().toAabbs().iterator().next()));
+    private static final Map<Direction, AABB> TOUCH_AABBS = ShapesHelper.rotate(Shapes.create(TOUCH_AABB))
+            .entrySet()
+            .stream()
+            .collect(Maps.toImmutableEnumMap(Map.Entry::getKey, entry -> entry.getValue().toAabbs().iterator().next()));
 
     private final SensitivityMaterial sensitivityMaterial;
 
     public DirectionalPressurePlateBlock(SensitivityMaterial sensitivityMaterial, Properties properties) {
         super(BlockSetType.STONE, properties);
         this.sensitivityMaterial = sensitivityMaterial;
-        this.registerDefaultState(this.defaultBlockState().setValue(WATERLOGGED, false).setValue(FACING, Direction.UP).setValue(SHROUDED, false).setValue(SILENT, false).setValue(LIT, false));
+        this.registerDefaultState(this.defaultBlockState()
+                .setValue(WATERLOGGED, false)
+                .setValue(FACING, Direction.UP)
+                .setValue(SHROUDED, false)
+                .setValue(SILENT, false)
+                .setValue(LIT, false));
     }
 
     @Override
@@ -90,16 +97,18 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         Direction direction = state.getValue(FACING);
         BlockPos blockPos = pos.relative(direction.getOpposite());
-        return level.getBlockState(blockPos).isFaceSturdy(level, blockPos, direction, SupportType.RIGID) || canSupportCenter(level, blockPos, direction);
+        return level.getBlockState(blockPos).isFaceSturdy(level, blockPos, direction, SupportType.RIGID) ||
+                canSupportCenter(level, blockPos, direction);
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
-        if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+    protected BlockState updateShape(BlockState blockState, LevelReader levelReader, ScheduledTickAccess scheduledTickAccess, BlockPos blockPos, Direction direction, BlockPos neighborBlockPos, BlockState neighborBlockState, RandomSource randomSource) {
+        if (blockState.getValue(WATERLOGGED)) {
+            scheduledTickAccess.scheduleTick(blockPos, Fluids.WATER, Fluids.WATER.getTickDelay(levelReader));
         }
 
-        return direction == state.getValue(FACING).getOpposite() && !state.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : state;
+        return direction == blockState.getValue(FACING).getOpposite() && !blockState.canSurvive(levelReader, blockPos) ?
+                Blocks.AIR.defaultBlockState() : blockState;
     }
 
     @Override
@@ -107,7 +116,8 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        BlockState state = this.defaultBlockState().setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
+        BlockState state = this.defaultBlockState()
+                .setValue(WATERLOGGED, level.getFluidState(pos).getType() == Fluids.WATER);
         for (Direction direction : context.getNearestLookingDirections()) {
             Direction opposite = direction.getOpposite();
             state = state.setValue(FACING, opposite);
@@ -176,12 +186,15 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     protected int getSignalStrength(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         AABB aABB = TOUCH_AABBS.get(state.getValue(FACING)).move(pos);
-        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getClazz(), aABB, EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(entity -> {
-            if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
-                return blockEntity.permits(entity);
-            }
-            return false;
-        }));
+        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getClazz(),
+                aABB,
+                EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(entity -> {
+                    if (!level.isClientSide &&
+                            level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
+                        return blockEntity.permits(entity);
+                    }
+                    return false;
+                }));
         return !entities.isEmpty() ? 15 : 0;
     }
 
@@ -225,7 +238,9 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY, Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
+        tooltipComponents.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY,
+                        Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY))
+                .withStyle(ChatFormatting.GREEN));
         if (context != Item.TooltipContext.EMPTY) {
             Component shiftComponent = Component.keybind("key.sneak").withStyle(ChatFormatting.LIGHT_PURPLE);
             Component useComponent = Component.keybind("key.use").withStyle(ChatFormatting.LIGHT_PURPLE);
@@ -247,12 +262,15 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
                     player.openMenu(blockEntity).ifPresent(containerId -> {
-                        PlentyPlates.NETWORKING.sendTo((ServerPlayer) player, new ClientboundInitialValuesMessage(containerId, blockEntity.getAllowedValues(), blockEntity.getCurrentValues()));
+                        PlentyPlates.NETWORK.sendMessage(PlayerSet.ofPlayer((ServerPlayer) player),
+                                new ClientboundInitialValuesMessage(containerId,
+                                        blockEntity.getAllowedValues(),
+                                        blockEntity.getCurrentValues()));
                     });
                 }
             }
 
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResultHelper.sidedSuccess(level.isClientSide);
         } else {
             return InteractionResult.PASS;
         }

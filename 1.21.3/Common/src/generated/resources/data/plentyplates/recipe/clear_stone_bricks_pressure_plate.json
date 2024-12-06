@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "redstone",
   "ingredients": [
-    {
-      "item": "plentyplates:stone_bricks_pressure_plate"
-    }
+    "plentyplates:stone_bricks_pressure_plate"
   ],
   "result": {
     "count": 1,

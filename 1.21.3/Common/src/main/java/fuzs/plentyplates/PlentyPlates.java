@@ -20,24 +20,24 @@ public class PlentyPlates implements ModConstructor {
     public static final String MOD_NAME = "Plenty Plates";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static final NetworkHandler NETWORKING = NetworkHandler.builder(MOD_ID)
+    public static final NetworkHandler NETWORK = NetworkHandler.builder(MOD_ID)
             .registerClientbound(ClientboundInitialValuesMessage.class)
             .registerServerbound(ServerboundSetValuesMessage.class);
 
     @Override
     public void onConstructMod() {
-        ModRegistry.touch();
+        ModRegistry.bootstrap();
     }
 
     @Override
     public void onRegisterCreativeModeTabs(CreativeModeTabContext context) {
-        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID,
-                () -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock())
-        ).displayItems((itemDisplayParameters, output) -> {
-            for (Block block : SensitivityMaterial.allBlocks()) {
-                output.accept(block);
-            }
-        }));
+        context.registerCreativeModeTab(CreativeModeTabConfigurator.from(MOD_ID)
+                .icon(() -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock()))
+                .displayItems((itemDisplayParameters, output) -> {
+                    for (Block block : SensitivityMaterial.allBlocks()) {
+                        output.accept(block);
+                    }
+                }));
     }
 
     public static ResourceLocation id(String path) {
