@@ -2,27 +2,27 @@
   "sources": [
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_obsidian"
+      "resource": "plentyplates:block/obsidian_translucent"
     },
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_cobblestone"
+      "resource": "plentyplates:block/cobblestone_translucent"
     },
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_mossy_cobblestone"
+      "resource": "plentyplates:block/mossy_cobblestone_translucent"
     },
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_stone_bricks"
+      "resource": "plentyplates:block/stone_bricks_translucent"
     },
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_mossy_stone_bricks"
+      "resource": "plentyplates:block/mossy_stone_bricks_translucent"
     },
     {
       "type": "minecraft:single",
-      "resource": "plentyplates:block/translucent_chiseled_stone_bricks"
+      "resource": "plentyplates:block/chiseled_stone_bricks_translucent"
     }
   ]
 }

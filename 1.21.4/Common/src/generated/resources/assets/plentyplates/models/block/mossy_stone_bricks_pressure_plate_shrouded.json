@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pressure_plate_up",
   "textures": {
-    "texture": "plentyplates:block/translucent_mossy_cobblestone"
+    "texture": "plentyplates:block/mossy_stone_bricks_translucent"
   }
 }

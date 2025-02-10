@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pressure_plate_down",
   "textures": {
-    "texture": "plentyplates:block/translucent_obsidian"
+    "texture": "plentyplates:block/chiseled_stone_bricks_translucent"
   }
 }

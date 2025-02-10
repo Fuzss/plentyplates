@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 public class TranslucentPackResources extends AbstractModPackResources {
     private static final Map<ResourceLocation, ResourceLocation> TRANSLUCENT_LOCATIONS = Stream.of(SensitivityMaterial.values())
             .collect(ImmutableMap.<SensitivityMaterial, ResourceLocation, ResourceLocation>toImmutableMap(
-                    SensitivityMaterial::getTranslucentTextureFile,
-                    SensitivityMaterial::getTextureFile));
+                    SensitivityMaterial::getFullTranslucentTextureLocation,
+                    SensitivityMaterial::getFullTextureLocation));
 
     @Nullable
     @Override

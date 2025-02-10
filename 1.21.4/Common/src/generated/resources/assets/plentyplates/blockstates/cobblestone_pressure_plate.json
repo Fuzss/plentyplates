@@ -5,7 +5,7 @@
       "x": 180
     },
     "facing=down,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate",
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded",
       "x": 180
     },
     "facing=down,powered=true,shrouded=false": {
@@ -13,96 +13,96 @@
       "x": 180
     },
     "facing=down,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down",
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down",
       "x": 180
     },
     "facing=east,powered=false,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate",
-      "x": 90,
-      "y": 90
+      "x": 270,
+      "y": 270
     },
     "facing=east,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate",
-      "x": 90,
-      "y": 90
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded",
+      "x": 270,
+      "y": 270
     },
     "facing=east,powered=true,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 90
+      "x": 270,
+      "y": 270
     },
     "facing=east,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 90
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down",
+      "x": 270,
+      "y": 270
     },
     "facing=north,powered=false,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate",
-      "x": 90
+      "x": 270,
+      "y": 180
     },
     "facing=north,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate",
-      "x": 90
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded",
+      "x": 270,
+      "y": 180
     },
     "facing=north,powered=true,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate_down",
-      "x": 90
+      "x": 270,
+      "y": 180
     },
     "facing=north,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down",
-      "x": 90
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down",
+      "x": 270,
+      "y": 180
     },
     "facing=south,powered=false,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate",
-      "x": 90,
-      "y": 180
+      "x": 270
     },
     "facing=south,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate",
-      "x": 90,
-      "y": 180
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded",
+      "x": 270
     },
     "facing=south,powered=true,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 180
+      "x": 270
     },
     "facing=south,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 180
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down",
+      "x": 270
     },
     "facing=up,powered=false,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate"
     },
     "facing=up,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate"
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded"
     },
     "facing=up,powered=true,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate_down"
     },
     "facing=up,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down"
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down"
     },
     "facing=west,powered=false,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate",
-      "x": 90,
-      "y": 270
+      "x": 270,
+      "y": 90
     },
     "facing=west,powered=false,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate",
-      "x": 90,
-      "y": 270
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded",
+      "x": 270,
+      "y": 90
     },
     "facing=west,powered=true,shrouded=false": {
       "model": "plentyplates:block/cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 270
+      "x": 270,
+      "y": 90
     },
     "facing=west,powered=true,shrouded=true": {
-      "model": "plentyplates:block/shrouded_cobblestone_pressure_plate_down",
-      "x": 90,
-      "y": 270
+      "model": "plentyplates:block/cobblestone_pressure_plate_shrouded_down",
+      "x": 270,
+      "y": 90
     }
   }
 }

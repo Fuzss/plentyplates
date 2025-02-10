@@ -7,6 +7,8 @@ import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
 import fuzs.puzzleslib.api.init.v3.registry.RegistryManager;
 import net.minecraft.core.Holder;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,6 +19,7 @@ import java.util.HashSet;
 
 public class ModRegistry {
     static final RegistryManager REGISTRIES = RegistryManager.from(PlentyPlates.MOD_ID);
+    public static final Holder.Reference<CreativeModeTab> CREATIVE_MODE_TAB;
     public static final Holder.Reference<BlockEntityType<PressurePlateBlockEntity>> PRESSURE_PLATE_BLOCK_ENTITY_TYPE;
 
     public static void bootstrap() {
@@ -33,6 +36,7 @@ public class ModRegistry {
             REGISTRIES.registerBlockItem(block);
             REGISTRIES.registerMenuType(material.id().getPath(), () -> PressurePlateMenu.create(material));
         }
+        CREATIVE_MODE_TAB = REGISTRIES.registerCreativeModeTab(() -> new ItemStack(SensitivityMaterial.OBSIDIAN.getPressurePlateBlock()));
         PRESSURE_PLATE_BLOCK_ENTITY_TYPE = REGISTRIES.registerBlockEntityType("pressure_plate",
                 PressurePlateBlockEntity::new,
                 () -> new HashSet<>(Arrays.asList(SensitivityMaterial.allBlocks())));

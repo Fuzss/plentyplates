@@ -16,7 +16,7 @@ public class ModBlockTagProvider extends AbstractTagProvider<Block> {
 
     @Override
     public void addTags(HolderLookup.Provider provider) {
-        this.add(BlockTags.STONE_PRESSURE_PLATES).add(SensitivityMaterial.allBlocks());
-        this.add(BlockTags.MINEABLE_WITH_PICKAXE).add(SensitivityMaterial.allBlocks());
+        this.tag(BlockTags.STONE_PRESSURE_PLATES).add(SensitivityMaterial.allBlocks());
+        this.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(SensitivityMaterial.allBlocks());
     }
 }
