@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -107,12 +107,12 @@ public enum SensitivityMaterial implements StringRepresentable {
         return PlentyPlates.id(this.name + "_pressure_plate");
     }
 
-    public String translationKey() {
+    public String getTranslationKey() {
         return Util.makeDescriptionId("block", this.id());
     }
 
-    public String descriptionKey() {
-        return this.translationKey() + ".entities";
+    public String getDescriptionKey() {
+        return this.getTranslationKey() + ".entities";
     }
 
     public ResourceLocation getTextureLocation() {

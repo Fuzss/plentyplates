@@ -4,7 +4,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +30,8 @@ public class ColorDataProvider implements DataProvider<DyeColor> {
     }
 
     @Override
-    public DyeColor fromTag(Tag tag, HolderLookup.Provider registries) {
-        if (tag.getId() == Tag.TAG_BYTE) {
-            return DyeColor.byId(((ByteTag) tag).getAsByte());
-        } else {
-            return null;
-        }
+    public @Nullable DyeColor fromTag(Tag tag, HolderLookup.Provider registries) {
+        return tag.asByte().map(DyeColor::byId).orElse(null);
     }
 
     @Override

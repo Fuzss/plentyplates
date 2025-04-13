@@ -60,10 +60,7 @@ public class RegistryDataProvider<T> implements DataProvider<Holder<T>> {
     public static RegistryDataProvider<VillagerProfession> villagerProfession() {
         return new RegistryDataProvider<>(Registries.VILLAGER_PROFESSION, (Entity entity) -> {
             if (entity instanceof Villager villager) {
-                VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
-                Registry<VillagerProfession> registry = villager.registryAccess()
-                        .lookupOrThrow(Registries.VILLAGER_PROFESSION);
-                return registry.wrapAsHolder(villagerProfession);
+                return villager.getVillagerData().profession();
             } else {
                 return null;
             }
@@ -94,12 +91,8 @@ public class RegistryDataProvider<T> implements DataProvider<Holder<T>> {
     }
 
     @Override
-    public Holder<T> fromTag(Tag tag, HolderLookup.Provider registries) {
-        if (tag.getId() == Tag.TAG_STRING) {
-            return this.fromString(tag.getAsString(), registries);
-        } else {
-            return null;
-        }
+    public @Nullable Holder<T> fromTag(Tag tag, HolderLookup.Provider registries) {
+        return tag.asString().map((String s) -> this.fromString(s, registries)).orElse(null);
     }
 
     @Override

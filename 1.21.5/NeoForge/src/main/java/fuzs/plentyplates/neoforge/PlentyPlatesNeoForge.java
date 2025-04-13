@@ -13,8 +13,9 @@ public class PlentyPlatesNeoForge {
 
     public PlentyPlatesNeoForge() {
         ModConstructor.construct(PlentyPlates.MOD_ID, PlentyPlates::new);
-        DataProviderHelper.registerDataProviders(PlentyPlates.MOD_ID, ModBlockTagProvider::new,
-                ModBlockLootProvider::new, ModRecipeProvider::new
-        );
+        DataProviderHelper.registerDataProviders(PlentyPlates.MOD_ID,
+                ModBlockTagProvider::new,
+                ModBlockLootProvider::new,
+                ModRecipeProvider::new);
     }
 }

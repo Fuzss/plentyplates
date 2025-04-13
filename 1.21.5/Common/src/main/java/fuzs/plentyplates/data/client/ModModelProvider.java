@@ -5,15 +5,30 @@ import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.puzzleslib.api.client.data.v2.AbstractModelProvider;
 import fuzs.puzzleslib.api.data.v2.core.DataProviderContext;
 import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.blockstates.*;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.renderer.block.model.VariantMutator;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class ModModelProvider extends AbstractModelProvider {
+    /**
+     * Rotations, so that horizontal direction textures line up with simple cube model.
+     *
+     * @see BlockModelGenerators#ROTATIONS_COLUMN_WITH_FACING
+     */
+    public static final PropertyDispatch<VariantMutator> ROTATIONS_COLUMN_WITH_FACING = PropertyDispatch.modify(
+                    BlockStateProperties.FACING)
+            .select(Direction.DOWN, BlockModelGenerators.X_ROT_180)
+            .select(Direction.UP, BlockModelGenerators.NOP)
+            .select(Direction.NORTH, BlockModelGenerators.X_ROT_270.then(BlockModelGenerators.Y_ROT_180))
+            .select(Direction.SOUTH, BlockModelGenerators.X_ROT_270)
+            .select(Direction.WEST, BlockModelGenerators.X_ROT_270.then(BlockModelGenerators.Y_ROT_90))
+            .select(Direction.EAST, BlockModelGenerators.X_ROT_270.then(BlockModelGenerators.Y_ROT_270));
 
     public ModModelProvider(DataProviderContext context) {
         super(context);
@@ -44,46 +59,13 @@ public class ModModelProvider extends AbstractModelProvider {
                 "_shrouded",
                 TextureMapping.cube(translucentTextureLocation),
                 blockModelGenerators.modelOutput);
-        blockModelGenerators.blockStateOutput.accept(createPressurePlateWithFacing(block,
-                upModelLocation,
-                downModelLocation,
-                upShroudedModelLocation,
-                downShroudedModelLocation));
-    }
-
-    public static BlockStateGenerator createPressurePlateWithFacing(Block block, ResourceLocation upModelLocation, ResourceLocation downModelLocation, ResourceLocation upShroudedModelLocation, ResourceLocation downShroudedModelLocation) {
-        return MultiVariantGenerator.multiVariant(block)
-                .with(PropertyDispatch.properties(DirectionalPressurePlateBlock.POWERED,
+        blockModelGenerators.blockStateOutput.accept(MultiVariantGenerator.dispatch(block)
+                .with(PropertyDispatch.initial(DirectionalPressurePlateBlock.POWERED,
                                 DirectionalPressurePlateBlock.SHROUDED)
-                        .select(false, false, Variant.variant().with(VariantProperties.MODEL, upModelLocation))
-                        .select(false, true, Variant.variant().with(VariantProperties.MODEL, upShroudedModelLocation))
-                        .select(true, false, Variant.variant().with(VariantProperties.MODEL, downModelLocation))
-                        .select(true, true, Variant.variant().with(VariantProperties.MODEL, downShroudedModelLocation)))
-                .with(createColumnWithFacing());
-    }
-
-    /**
-     * Similar to {@link BlockModelGenerators#createColumnWithFacing()}, but horizontal direction textures line up with
-     * simple cube model.
-     */
-    public static PropertyDispatch createColumnWithFacing() {
-        return PropertyDispatch.property(BlockStateProperties.FACING)
-                .select(Direction.DOWN,
-                        Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R180))
-                .select(Direction.UP, Variant.variant())
-                .select(Direction.SOUTH,
-                        Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
-                .select(Direction.NORTH,
-                        Variant.variant()
-                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R270)
-                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
-                .select(Direction.EAST,
-                        Variant.variant()
-                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R270)
-                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
-                .select(Direction.WEST,
-                        Variant.variant()
-                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R270)
-                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90));
+                        .select(false, false, BlockModelGenerators.plainVariant(upModelLocation))
+                        .select(false, true, BlockModelGenerators.plainVariant(upShroudedModelLocation))
+                        .select(true, false, BlockModelGenerators.plainVariant(downModelLocation))
+                        .select(true, true, BlockModelGenerators.plainVariant(downShroudedModelLocation)))
+                .with(ROTATIONS_COLUMN_WITH_FACING));
     }
 }

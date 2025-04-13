@@ -30,9 +30,7 @@ public class ModRegistry {
         for (SensitivityMaterial material : SensitivityMaterial.values()) {
             Holder.Reference<Block> block = REGISTRIES.registerBlock(material.id().getPath(),
                     (BlockBehaviour.Properties properties) -> new DirectionalPressurePlateBlock(material, properties),
-                    () -> BlockBehaviour.Properties.ofFullCopy(material.getMaterialBlock())
-                            .noCollission()
-                            .lightLevel(Blocks.litBlockEmission(15)));
+                    () -> pressurePlateProperties(material));
             REGISTRIES.registerBlockItem(block);
             REGISTRIES.registerMenuType(material.id().getPath(), () -> PressurePlateMenu.create(material));
         }
@@ -40,5 +38,11 @@ public class ModRegistry {
         PRESSURE_PLATE_BLOCK_ENTITY_TYPE = REGISTRIES.registerBlockEntityType("pressure_plate",
                 PressurePlateBlockEntity::new,
                 () -> new HashSet<>(Arrays.asList(SensitivityMaterial.allBlocks())));
+    }
+
+    private static BlockBehaviour.Properties pressurePlateProperties(SensitivityMaterial material) {
+        return BlockBehaviour.Properties.ofFullCopy(material.getMaterialBlock())
+                .noCollission()
+                .lightLevel(Blocks.litBlockEmission(15));
     }
 }

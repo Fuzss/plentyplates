@@ -6,13 +6,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class DataStorage<T> implements NbtSerializable {
     private final DataProvider<T> provider;
-    private List<T> data = List.of();
+    private List<T> data = Collections.emptyList();
 
     public DataStorage(DataProvider<T> provider) {
         this.provider = provider;
@@ -21,8 +22,11 @@ public class DataStorage<T> implements NbtSerializable {
     public boolean permits(Entity entity, boolean whitelist) {
         if (this.data.isEmpty()) return true;
         T providedValue = this.provider.fromEntity(entity);
-        if (providedValue == null) return false;
-        return this.data.contains(providedValue) == whitelist;
+        if (providedValue == null) {
+            return false;
+        } else {
+            return this.data.contains(providedValue) == whitelist;
+        }
     }
 
     public Collection<String> getAllowedValues(HolderLookup.Provider registries) {
@@ -30,7 +34,10 @@ public class DataStorage<T> implements NbtSerializable {
     }
 
     public void setCurrentValues(List<String> values, HolderLookup.Provider registries) {
-        this.data = values.stream().map(value -> this.provider.fromString(value, registries)).filter(Objects::nonNull).collect(Collectors.toList());
+        this.data = values.stream()
+                .map((String value) -> this.provider.fromString(value, registries))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public List<String> getCurrentValues(HolderLookup.Provider registries) {

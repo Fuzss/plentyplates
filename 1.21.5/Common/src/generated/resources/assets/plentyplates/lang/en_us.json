@@ -9,8 +9,6 @@
   "block.plentyplates.mossy_stone_bricks_pressure_plate.entities": "Villagers",
   "block.plentyplates.obsidian_pressure_plate": "Obsidian Pressure Plate",
   "block.plentyplates.obsidian_pressure_plate.entities": "Players",
-  "block.plentyplates.pressure_plate.activated_by": "Activated By: %s",
-  "block.plentyplates.pressure_plate.description": "Use %s + %s with an empty hand to configure once placed.",
   "block.plentyplates.stone_bricks_pressure_plate": "Stone Bricks Pressure Plate",
   "block.plentyplates.stone_bricks_pressure_plate.entities": "Mobs",
   "container.pressure_plate": "Pressure Plate",
@@ -26,5 +24,7 @@
   "gui.pressure_plate.silent.on": "Noisy",
   "gui.pressure_plate.whitelist.off": "Blacklist",
   "gui.pressure_plate.whitelist.on": "Whitelist",
+  "item.plentyplates.pressure_plate.tooltip.activated_by": "Activated By: %s",
+  "item.plentyplates.pressure_plate.tooltip.description": "Use %s + %s with an empty hand to configure once placed.",
   "itemGroup.plentyplates.main": "Plenty Plates"
 }

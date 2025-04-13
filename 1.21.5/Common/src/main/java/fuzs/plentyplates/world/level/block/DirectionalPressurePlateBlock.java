@@ -3,17 +3,14 @@ package fuzs.plentyplates.world.level.block;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
-import fuzs.puzzleslib.api.core.v1.Proxy;
-import fuzs.puzzleslib.api.network.v3.PlayerSet;
+import fuzs.puzzleslib.api.network.v4.MessageSender;
+import fuzs.puzzleslib.api.network.v4.PlayerSet;
 import fuzs.puzzleslib.api.util.v1.InteractionResultHelper;
 import fuzs.puzzleslib.api.util.v1.ShapesHelper;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -21,10 +18,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
@@ -55,15 +50,15 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
             return ((DirectionalPressurePlateBlock) pressurePlateBlock).sensitivityMaterial;
         }), propertiesCodec()).apply(instance, DirectionalPressurePlateBlock::new);
     });
-    public static final String KEY_PRESSURE_PLATE_ACTIVATED_BY = "block.plentyplates.pressure_plate.activated_by";
-    public static final String KEY_PRESSURE_PLATE_DESCRIPTION = "block.plentyplates.pressure_plate.description";
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
     public static final BooleanProperty SHROUDED = BooleanProperty.create("shrouded");
     public static final BooleanProperty SILENT = BooleanProperty.create("silent");
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    private static final Map<Direction, VoxelShape> SHAPES = ShapesHelper.rotate(AABB);
-    private static final Map<Direction, VoxelShape> PRESSED_SHAPES = ShapesHelper.rotate(PRESSED_AABB);
+    private static final VoxelShape SHAPE = Block.column(14.0, 0.0, 1.0);
+    private static final VoxelShape SHAPE_PRESSED = Block.column(14.0, 0.0, 0.5);
+    private static final Map<Direction, VoxelShape> SHAPES = ShapesHelper.rotate(SHAPE);
+    private static final Map<Direction, VoxelShape> PRESSED_SHAPES = ShapesHelper.rotate(SHAPE_PRESSED);
     private static final Map<Direction, AABB> TOUCH_AABBS = ShapesHelper.rotate(Shapes.create(TOUCH_AABB))
             .entrySet()
             .stream()
@@ -85,6 +80,10 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     @Override
     public MapCodec<PressurePlateBlock> codec() {
         return CODEC;
+    }
+
+    public SensitivityMaterial getSensitivityMaterial() {
+        return this.sensitivityMaterial;
     }
 
     @Override
@@ -149,7 +148,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier insideBlockEffectApplier) {
         if (!level.isClientSide) {
             int i = this.getSignalForState(state);
             if (i == 0) {
@@ -236,20 +235,6 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         builder.add(WATERLOGGED, FACING, SHROUDED, SILENT, LIT);
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable(KEY_PRESSURE_PLATE_ACTIVATED_BY,
-                        Component.translatable(this.sensitivityMaterial.descriptionKey()).withStyle(ChatFormatting.GRAY))
-                .withStyle(ChatFormatting.GREEN));
-        if (context != Item.TooltipContext.EMPTY) {
-            Component shiftComponent = Component.keybind("key.sneak").withStyle(ChatFormatting.LIGHT_PURPLE);
-            Component useComponent = Component.keybind("key.use").withStyle(ChatFormatting.LIGHT_PURPLE);
-            Component component = Component.translatable(KEY_PRESSURE_PLATE_DESCRIPTION, shiftComponent, useComponent)
-                    .withStyle(ChatFormatting.GRAY);
-            tooltipComponents.addAll(Proxy.INSTANCE.splitTooltipLines(component));
-        }
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -262,7 +247,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
                     player.openMenu(blockEntity).ifPresent(containerId -> {
-                        PlentyPlates.NETWORK.sendMessage(PlayerSet.ofPlayer((ServerPlayer) player),
+                        MessageSender.broadcast(PlayerSet.ofPlayer((ServerPlayer) player),
                                 new ClientboundInitialValuesMessage(containerId,
                                         blockEntity.getAllowedValues(),
                                         blockEntity.getCurrentValues()));

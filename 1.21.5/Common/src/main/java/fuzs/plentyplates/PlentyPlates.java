@@ -2,10 +2,10 @@ package fuzs.plentyplates;
 
 import fuzs.plentyplates.init.ModRegistry;
 import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
-import fuzs.plentyplates.network.ServerboundSetValuesMessage;
+import fuzs.plentyplates.network.client.ServerboundSetValuesMessage;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
+import fuzs.puzzleslib.api.core.v1.context.PayloadTypesContext;
 import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
-import fuzs.puzzleslib.api.network.v3.NetworkHandler;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +15,15 @@ public class PlentyPlates implements ModConstructor {
     public static final String MOD_NAME = "Plenty Plates";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static final NetworkHandler NETWORK = NetworkHandler.builder(MOD_ID)
-            .registerClientbound(ClientboundInitialValuesMessage.class)
-            .registerServerbound(ServerboundSetValuesMessage.class);
-
     @Override
     public void onConstructMod() {
         ModRegistry.bootstrap();
+    }
+
+    @Override
+    public void onRegisterPayloadTypes(PayloadTypesContext context) {
+        context.playToClient(ClientboundInitialValuesMessage.class, ClientboundInitialValuesMessage.STREAM_CODEC);
+        context.playToServer(ServerboundSetValuesMessage.class, ServerboundSetValuesMessage.STREAM_CODEC);
     }
 
     public static ResourceLocation id(String path) {

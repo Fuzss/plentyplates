@@ -2,9 +2,9 @@ package fuzs.plentyplates.neoforge.client;
 
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.PlentyPlatesClient;
+import fuzs.plentyplates.data.client.ModAtlasProvider;
 import fuzs.plentyplates.data.client.ModLanguageProvider;
 import fuzs.plentyplates.data.client.ModModelProvider;
-import fuzs.plentyplates.neoforge.data.client.ModAtlasProvider;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
 import fuzs.puzzleslib.neoforge.api.data.v2.core.DataProviderHelper;
 import net.neoforged.api.distmarker.Dist;

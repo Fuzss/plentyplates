@@ -3,12 +3,13 @@ package fuzs.plentyplates.client.gui.screens;
 import com.mojang.blaze3d.platform.InputConstants;
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.gui.components.LabelButton;
-import fuzs.plentyplates.network.ServerboundSetValuesMessage;
+import fuzs.plentyplates.network.client.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
-import fuzs.puzzleslib.api.client.gui.v2.components.GuiGraphicsHelper;
+import fuzs.puzzleslib.api.client.gui.v2.GuiGraphicsHelper;
 import fuzs.puzzleslib.api.client.gui.v2.components.SpritelessImageButton;
 import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
+import fuzs.puzzleslib.api.network.v4.MessageSender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,8 +27,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.compress.utils.Lists;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     private AbstractWidget confirmButton;
     private AbstractWidget removeButton;
     private final AbstractWidget[] navigationButtons = new AbstractWidget[2];
-    private List<String> currentValues = Lists.newArrayList();
+    private List<String> currentValues = new ArrayList<>();
     private int currentValuesPage;
     private Collection<String> allowedValues = Collections.emptySet();
     private final AbstractWidget[] whitelistButtons = new AbstractWidget[2];
@@ -440,6 +441,6 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     }
 
     private void sendCurrentValues() {
-        PlentyPlates.NETWORK.sendToServer(new ServerboundSetValuesMessage(this.menu.containerId, this.currentValues));
+        MessageSender.broadcast(new ServerboundSetValuesMessage(this.menu.containerId, this.currentValues));
     }
 }
