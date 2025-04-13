@@ -20,12 +20,11 @@ public class DataStorage<T> implements NbtSerializable {
     }
 
     public boolean permits(Entity entity, boolean whitelist) {
-        if (this.data.isEmpty()) return true;
-        T providedValue = this.provider.fromEntity(entity);
-        if (providedValue == null) {
-            return false;
+        if (this.data.isEmpty()) {
+            return true;
         } else {
-            return this.data.contains(providedValue) == whitelist;
+            T providedValue = this.provider.fromEntity(entity);
+            return providedValue != null && this.data.contains(providedValue) == whitelist;
         }
     }
 

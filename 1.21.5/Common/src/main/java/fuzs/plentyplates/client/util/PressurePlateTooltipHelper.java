@@ -20,7 +20,8 @@ public class PressurePlateTooltipHelper {
 
     public static void appendHoverText(DirectionalPressurePlateBlock block, ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag, Consumer<Component> tooltipLineConsumer) {
         tooltipLineConsumer.accept(Component.translatable(TooltipComponent.ACTIVATED_BY.getTranslationKey(),
-                Component.translatable(block.getSensitivityMaterial().getDescriptionKey()).withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
+                Component.translatable(block.getSensitivityMaterial().getDescriptionKey())
+                        .withStyle(ChatFormatting.GRAY)).withStyle(ChatFormatting.GREEN));
         Options options = Minecraft.getInstance().options;
         Component shiftComponent = Component.keybind(options.keyShift.getName()).withStyle(ChatFormatting.LIGHT_PURPLE);
         Component useComponent = Component.keybind(options.keyUse.getName()).withStyle(ChatFormatting.LIGHT_PURPLE);
@@ -35,7 +36,7 @@ public class PressurePlateTooltipHelper {
         ACTIVATED_BY;
 
         public String getTranslationKey() {
-            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.ITEM),
+            return Util.makeDescriptionId(Registries.elementsDirPath(Registries.BLOCK),
                     PlentyPlates.id("pressure_plate")) + ".tooltip." + this.getSerializedName();
         }
 
