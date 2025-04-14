@@ -7,7 +7,6 @@ import fuzs.plentyplates.world.level.block.entity.data.ColorDataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.DataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.PlayerDataProvider;
 import fuzs.plentyplates.world.level.block.entity.data.RegistryDataProvider;
-import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -23,47 +22,27 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public enum SensitivityMaterial implements StringRepresentable {
-    OBSIDIAN("obsidian",
-            Blocks.OBSIDIAN,
-            Player.class,
-            ResourceLocationHelper.withDefaultNamespace("block/obsidian"),
-            PlayerDataProvider::new),
-    COBBLESTONE("cobblestone",
-            Blocks.COBBLESTONE,
-            Entity.class,
-            ResourceLocationHelper.withDefaultNamespace("block/cobblestone"),
-            () -> RegistryDataProvider.entityType(false)),
-    MOSSY_COBBLESTONE("mossy_cobblestone",
-            Blocks.MOSSY_COBBLESTONE,
-            ItemEntity.class,
-            ResourceLocationHelper.withDefaultNamespace("block/mossy_cobblestone"),
-            RegistryDataProvider::item),
-    STONE_BRICKS("stone_bricks",
-            Blocks.STONE_BRICKS,
+    OBSIDIAN(Blocks.OBSIDIAN, Player.class, PlayerDataProvider::new),
+    COBBLESTONE(Blocks.COBBLESTONE, Entity.class, () -> RegistryDataProvider.entityType(false)),
+    MOSSY_COBBLESTONE(Blocks.MOSSY_COBBLESTONE, ItemEntity.class, RegistryDataProvider::item),
+    STONE_BRICKS(Blocks.STONE_BRICKS,
             Mob.class,
-            ResourceLocationHelper.withDefaultNamespace("block/stone_bricks"),
             () -> RegistryDataProvider.entityType(true),
             PressurePlateSetting.BABY),
-    MOSSY_STONE_BRICKS("mossy_stone_bricks",
-            Blocks.MOSSY_STONE_BRICKS,
+    MOSSY_STONE_BRICKS(Blocks.MOSSY_STONE_BRICKS,
             Villager.class,
-            ResourceLocationHelper.withDefaultNamespace("block/mossy_stone_bricks"),
             RegistryDataProvider::villagerProfession,
             PressurePlateSetting.BABY),
-    CHISELED_STONE_BRICKS("chiseled_stone_bricks",
-            Blocks.CHISELED_STONE_BRICKS,
-            Sheep.class,
-            ResourceLocationHelper.withDefaultNamespace("block/chiseled_stone_bricks"),
-            ColorDataProvider::new);
+    CHISELED_STONE_BRICKS(Blocks.CHISELED_STONE_BRICKS, Sheep.class, ColorDataProvider::new);
 
     public static final StringRepresentable.StringRepresentableCodec<SensitivityMaterial> CODEC = StringRepresentable.fromEnum(
             SensitivityMaterial::values);
 
-    private final String name;
     private final Block materialBlock;
     private final Class<? extends Entity> clazz;
     private final ResourceLocation textureLocation;
@@ -72,8 +51,15 @@ public enum SensitivityMaterial implements StringRepresentable {
     private Block pressurePlateBlock;
     private MenuType<PressurePlateMenu> menuType;
 
-    SensitivityMaterial(String name, Block materialBlock, Class<? extends Entity> clazz, ResourceLocation textureLocation, Supplier<DataProvider<?>> dataProvider, PressurePlateSetting... settings) {
-        this.name = name;
+    SensitivityMaterial(Block materialBlock, Class<? extends Entity> clazz, Supplier<DataProvider<?>> dataProvider, PressurePlateSetting... settings) {
+        this(materialBlock,
+                clazz,
+                materialBlock.builtInRegistryHolder().key().location().withPrefix("block/"),
+                dataProvider,
+                settings);
+    }
+
+    SensitivityMaterial(Block materialBlock, Class<? extends Entity> clazz, ResourceLocation textureLocation, Supplier<DataProvider<?>> dataProvider, PressurePlateSetting... settings) {
         this.materialBlock = materialBlock;
         this.clazz = clazz;
         this.textureLocation = textureLocation;
@@ -83,15 +69,16 @@ public enum SensitivityMaterial implements StringRepresentable {
 
     @Override
     public String getSerializedName() {
-        return this.name;
+        return this.name().toLowerCase(Locale.ROOT);
     }
 
     public Block getPressurePlateBlock() {
         if (this.pressurePlateBlock == null) {
             Preconditions.checkArgument(BuiltInRegistries.BLOCK.containsKey(this.id()));
-            this.pressurePlateBlock = BuiltInRegistries.BLOCK.getValue(this.id());
+            return this.pressurePlateBlock = BuiltInRegistries.BLOCK.getValue(this.id());
+        } else {
+            return this.pressurePlateBlock;
         }
-        return this.pressurePlateBlock;
     }
 
     @SuppressWarnings("unchecked")
@@ -104,7 +91,7 @@ public enum SensitivityMaterial implements StringRepresentable {
     }
 
     public ResourceLocation id() {
-        return PlentyPlates.id(this.name + "_pressure_plate");
+        return PlentyPlates.id(this.getSerializedName() + "_pressure_plate");
     }
 
     public String getTranslationKey() {

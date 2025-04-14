@@ -2,7 +2,7 @@ package fuzs.plentyplates.client;
 
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.gui.screens.PressurePlateScreen;
-import fuzs.plentyplates.client.packs.TranslucentPackResources;
+import fuzs.plentyplates.client.packs.TransformingPackResources;
 import fuzs.plentyplates.client.util.PressurePlateTooltipHelper;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
@@ -38,7 +38,7 @@ public class PlentyPlatesClient implements ClientModConstructor {
     @Override
     public void onAddResourcePackFinders(PackRepositorySourcesContext context) {
         context.addRepositorySource(PackResourcesHelper.buildClientPack(PlentyPlates.id("translucent_texture"),
-                TranslucentPackResources::new,
-                false));
+                TransformingPackResources::new,
+                true));
     }
 }
