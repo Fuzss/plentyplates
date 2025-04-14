@@ -4,6 +4,7 @@ import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.gui.screens.PressurePlateScreen;
 import fuzs.plentyplates.client.packs.TransformingPackResources;
 import fuzs.plentyplates.client.util.PressurePlateTooltipHelper;
+import fuzs.plentyplates.init.ModRegistry;
 import fuzs.plentyplates.world.level.block.DirectionalPressurePlateBlock;
 import fuzs.plentyplates.world.level.block.SensitivityMaterial;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
@@ -25,9 +26,7 @@ public class PlentyPlatesClient implements ClientModConstructor {
 
     @Override
     public void onRegisterMenuScreens(MenuScreensContext context) {
-        for (SensitivityMaterial material : SensitivityMaterial.values()) {
-            context.registerMenuScreen(material.getMenuType(), PressurePlateScreen::new);
-        }
+        context.registerMenuScreen(ModRegistry.PRESSURE_PLATE_MENU_TYPE.value(), PressurePlateScreen::new);
     }
 
     @Override

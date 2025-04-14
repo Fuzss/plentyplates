@@ -1,7 +1,7 @@
-// 1.21.5	2025-04-13T20:28:17.372794	Block Loot Tables
-26b3014df2d92fc0638922f259c114f716a7aaf5 data/plentyplates/loot_table/blocks/chiseled_stone_bricks_pressure_plate.json
+// 1.21.5	2025-04-14T17:20:19.774396	Block Loot Tables
+2185972226ae2cf03f1085926ad6ae9e1a7634c3 data/plentyplates/loot_table/blocks/chiseled_stone_brick_pressure_plate.json
 e5b3c03f6cfb74dba03c591e5a43951e15dd9eac data/plentyplates/loot_table/blocks/cobblestone_pressure_plate.json
 655cae90324da7f7c1cfb76d2e2a473aafe67c60 data/plentyplates/loot_table/blocks/mossy_cobblestone_pressure_plate.json
-1e3a2a5cea9077bc6bf32ba7602657adc0a0eb70 data/plentyplates/loot_table/blocks/mossy_stone_bricks_pressure_plate.json
+ef8182937e86e9601fc19cb5a78b4fe0ba13d8f2 data/plentyplates/loot_table/blocks/mossy_stone_brick_pressure_plate.json
 ddab6723ae38ca8439c9f781ca8639b23c6acc50 data/plentyplates/loot_table/blocks/obsidian_pressure_plate.json
-344bea8ebe2061e31868fd62d18fcb5fde30da6a data/plentyplates/loot_table/blocks/stone_bricks_pressure_plate.json
+8fc21033980d8581ca14be0f54bbcb93305dadfa data/plentyplates/loot_table/blocks/stone_brick_pressure_plate.json

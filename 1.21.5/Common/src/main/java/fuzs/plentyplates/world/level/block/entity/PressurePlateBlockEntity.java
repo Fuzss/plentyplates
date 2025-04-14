@@ -50,7 +50,6 @@ public class PressurePlateBlockEntity extends BlockEntity implements MenuProvide
             return PressurePlateSetting.values().length;
         }
     };
-
     @Nullable
     private EntityReference<Player> owner;
     private SensitivityMaterial sensitivityMaterial;

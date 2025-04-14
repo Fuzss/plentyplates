@@ -3,24 +3,23 @@ package fuzs.plentyplates.client.gui.screens;
 import com.mojang.blaze3d.platform.InputConstants;
 import fuzs.plentyplates.PlentyPlates;
 import fuzs.plentyplates.client.gui.components.LabelButton;
+import fuzs.plentyplates.client.gui.components.PressurePlateSettingButton;
 import fuzs.plentyplates.network.client.ServerboundSetValuesMessage;
 import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.PressurePlateSetting;
 import fuzs.puzzleslib.api.client.gui.v2.GuiGraphicsHelper;
 import fuzs.puzzleslib.api.client.gui.v2.components.SpritelessImageButton;
-import fuzs.puzzleslib.api.core.v1.utility.ResourceLocationHelper;
 import fuzs.puzzleslib.api.network.v4.MessageSender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,15 +27,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class PressurePlateScreen extends Screen implements MenuAccess<PressurePlateMenu>, ContainerListener {
     public static final ResourceLocation TEXTURE_LOCATION = PlentyPlates.id("textures/gui/pressure_plate.png");
-    private static final ResourceLocation BARRIER_LOCATION = ResourceLocationHelper.withDefaultNamespace("item/barrier");
     private static final int VALUES_PER_PAGE = 7;
 
     private final PressurePlateMenu menu;
@@ -50,10 +46,9 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     private AbstractWidget confirmButton;
     private AbstractWidget removeButton;
     private final AbstractWidget[] navigationButtons = new AbstractWidget[2];
-    private List<String> currentValues = new ArrayList<>();
-    private int currentValuesPage;
-    private Collection<String> allowedValues = Collections.emptySet();
     private final AbstractWidget[] whitelistButtons = new AbstractWidget[2];
+    private final PressurePlateSettingButton[] settingButtons = new PressurePlateSettingButton[PressurePlateSetting.values().length];
+    private int currentValuesPage;
 
     public PressurePlateScreen(PressurePlateMenu menu, Inventory inventory, Component title) {
         super(title);
@@ -64,6 +59,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     @Override
     protected void init() {
         super.init();
+        Arrays.fill(this.settingButtons, null);
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
         this.addRenderableWidget(new SpritelessImageButton(this.leftPos + this.imageWidth - 3 - 21,
@@ -73,24 +69,13 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 203,
                 0,
                 TEXTURE_LOCATION,
-                button -> {
+                (Button button) -> {
                     this.onClose();
                 }));
         this.addWhitelistButtons();
         this.addSettingsButtons();
         this.addTextBoxes();
-    }
-
-    @Override
-    public void removed() {
-        this.menu.removeSlotListener(this);
-    }
-
-    @Override
-    public void resize(Minecraft minecraft, int width, int height) {
-        String string = this.editBox.getValue();
-        this.init(minecraft, width, height);
-        this.editBox.setValue(string);
+        this.updateButtons();
     }
 
     private void addWhitelistButtons() {
@@ -110,20 +95,18 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                     TEXTURE_LOCATION,
                     256,
                     256,
-                    button -> {
+                    (Button button) -> {
                         this.sendButtonClick(0);
                         this.whitelistButtons[me].visible = false;
                         this.whitelistButtons[other].visible = true;
                     }));
             this.whitelistButtons[i].setTooltip(Tooltip.create(PressurePlateSetting.WHITELIST.getComponent(me == 0)));
         }
-        this.updateWhitelistButtons();
     }
 
-    private void updateWhitelistButtons() {
-        if (this.whitelistButtons[0] != null && this.whitelistButtons[1] != null) {
-            this.whitelistButtons[0].visible = this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
-            this.whitelistButtons[1].visible = !this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
+    private void sendButtonClick(int id) {
+        if (this.menu.clickMenuButton(this.minecraft.player, id)) {
+            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, id);
         }
     }
 
@@ -132,50 +115,16 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
         int settingsAmount = settings.length - 1;
         int posX = (this.width - settingsAmount * 30 - 20) / 2 + 30;
         int posY = this.topPos + 20;
-        int i = 0;
-        for (PressurePlateSetting setting : settings) {
-            if (i++ == 0) continue;
-            this.addRenderableWidget(new SpritelessImageButton(posX + (i - 2) * 30,
-                    posY,
-                    20,
-                    20,
-                    setting.getTextureId() * 20 + 40,
-                    166,
-                    TEXTURE_LOCATION,
-                    button -> {
-                        this.sendButtonClick(setting.ordinal());
-                        boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
-                        button.setTooltip(Tooltip.create(setting.getComponent(settingsValue)));
-                    }) {
-
-                {
-                    boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
-                    this.setTooltip(Tooltip.create(setting.getComponent(settingsValue)));
-                }
-
-                @Override
-                public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-                    super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-                    boolean settingsValue = PressurePlateScreen.this.menu.getSettingsValue(setting);
-                    if (!settingsValue) {
-                        TextureAtlasSprite textureAtlasSprite = PressurePlateScreen.this.minecraft.getTextureAtlas(
-                                TextureAtlas.LOCATION_BLOCKS).apply(BARRIER_LOCATION);
-                        guiGraphics.blitSprite(RenderType::guiTextured,
-                                textureAtlasSprite,
-                                this.getX() + 2,
-                                this.getY() + 2,
-                                0,
-                                16,
-                                16);
-                    }
-                }
-            });
-        }
-    }
-
-    private void sendButtonClick(int id) {
-        if (this.menu.clickMenuButton(this.minecraft.player, id)) {
-            this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, id);
+        for (int i = 0, j = 0; i < settings.length; i++, j++) {
+            PressurePlateSetting setting = settings[i];
+            if (setting != PressurePlateSetting.WHITELIST) {
+                this.settingButtons[j] = this.addRenderableWidget(new PressurePlateSettingButton(posX + j * 30,
+                        posY,
+                        setting,
+                        this.menu));
+            } else {
+                j--;
+            }
         }
     }
 
@@ -186,7 +135,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 130,
                 20,
                 Component.empty()));
-        this.editBox.setResponder(s -> {
+        this.editBox.setResponder((String s) -> {
             boolean valid = this.isValidInput(s);
             this.confirmButton.active = valid;
             this.editBox.setTextColor(valid ? 14737632 : ChatFormatting.RED.getColor());
@@ -194,8 +143,9 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             if (valid) {
                 suggestion = "";
             } else {
-                suggestion = this.allowedValues.stream()
-                        .filter(Predicate.not(this.currentValues::contains))
+                suggestion = this.menu.getAllowedValues()
+                        .stream()
+                        .filter(Predicate.not(this.menu.getCurrentValues()::contains))
                         .filter(value -> value.startsWith(s))
                         .map(value -> this.font.plainSubstrByWidth(value, this.editBox.getInnerWidth()))
                         .map(value -> value.substring(s.length()))
@@ -214,7 +164,7 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 button -> {
                     String value = this.editBox.getValue();
                     if (this.isValidInput(value)) {
-                        this.currentValues.add(value);
+                        this.menu.getCurrentValues().add(value);
                         this.sendCurrentValues();
                         this.rebuildListView(true);
                     }
@@ -231,8 +181,8 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                 button -> {
                     if (this.selectedLabel != -1) {
                         int index = this.currentValuesPage * VALUES_PER_PAGE + this.selectedLabel;
-                        if (index >= 0 && index < this.currentValues.size()) {
-                            this.currentValues.remove(index);
+                        if (index >= 0 && index < this.menu.getCurrentValues().size()) {
+                            this.menu.getCurrentValues().remove(index);
                             this.sendCurrentValues();
                             this.rebuildListView(false);
                         }
@@ -283,13 +233,41 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
     }
 
     private boolean isValidInput(String s) {
-        if (s.isBlank()) return false;
-        return (this.allowedValues.isEmpty() || this.allowedValues.contains(s)) && !this.currentValues.contains(s);
+        if (s.isBlank()) {
+            return false;
+        } else {
+            return (this.menu.getAllowedValues().isEmpty() || this.menu.getAllowedValues().contains(s)) &&
+                    !this.menu.getCurrentValues().contains(s);
+        }
+    }
+
+    private void updateButtons() {
+        if (this.whitelistButtons[0] != null && this.whitelistButtons[1] != null) {
+            this.whitelistButtons[0].visible = this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
+            this.whitelistButtons[1].visible = !this.menu.getSettingsValue(PressurePlateSetting.WHITELIST);
+        }
+        for (PressurePlateSettingButton button : this.settingButtons) {
+            if (button != null) {
+                button.refreshTooltip();
+            }
+        }
+    }
+
+    @Override
+    public void removed() {
+        this.menu.removeSlotListener(this);
+    }
+
+    @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        String string = this.editBox.getValue();
+        this.init(minecraft, width, height);
+        this.editBox.setValue(string);
     }
 
     private void rebuildListView(boolean scrollToBottom) {
         this.selectedLabel = -1;
-        int lastValuesPage = (this.currentValues.size() - 1) / VALUES_PER_PAGE;
+        int lastValuesPage = (this.menu.getCurrentValues().size() - 1) / VALUES_PER_PAGE;
         if (scrollToBottom || lastValuesPage < this.currentValuesPage) {
             this.currentValuesPage = lastValuesPage;
         }
@@ -299,11 +277,11 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             clickableLabel.reset();
             int index = this.currentValuesPage * VALUES_PER_PAGE + i;
             Component message;
-            boolean empty = index >= this.currentValues.size();
+            boolean empty = index >= this.menu.getCurrentValues().size();
             if (empty) {
                 message = Component.empty();
             } else {
-                message = Component.literal(this.currentValues.get(index));
+                message = Component.literal(this.menu.getCurrentValues().get(index));
             }
             clickableLabel.setMessage(message);
             clickableLabel.visible = !empty;
@@ -313,7 +291,8 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
 
     private void updateNavigationButtons() {
         this.navigationButtons[0].active = this.currentValuesPage > 0;
-        this.navigationButtons[1].active = this.currentValuesPage < (this.currentValues.size() - 1) / VALUES_PER_PAGE;
+        this.navigationButtons[1].active =
+                this.currentValuesPage < (this.menu.getCurrentValues().size() - 1) / VALUES_PER_PAGE;
     }
 
     @Override
@@ -379,8 +358,9 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
             int increment = hasShiftDown() ? -1 : 1;
             String s = this.editBox.getValue();
             if (this.isValidInput(s)) {
-                List<String> suggestions = this.allowedValues.stream()
-                        .filter(Predicate.not(this.currentValues::contains))
+                List<String> suggestions = this.menu.getAllowedValues()
+                        .stream()
+                        .filter(Predicate.not(this.menu.getCurrentValues()::contains))
                         .toList();
                 int index = suggestions.indexOf(s);
                 if (index != -1) {
@@ -388,8 +368,9 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
                             ((index + increment) % suggestions.size() + suggestions.size()) % suggestions.size()));
                 }
             } else {
-                String suggestion = this.allowedValues.stream()
-                        .filter(Predicate.not(this.currentValues::contains))
+                String suggestion = this.menu.getAllowedValues()
+                        .stream()
+                        .filter(Predicate.not(this.menu.getCurrentValues()::contains))
                         .filter(value -> value.startsWith(s))
                         .findFirst()
                         .orElse(s);
@@ -425,22 +406,15 @@ public class PressurePlateScreen extends Screen implements MenuAccess<PressurePl
 
     @Override
     public void slotChanged(AbstractContainerMenu containerToSend, int dataSlotIndex, ItemStack stack) {
-
+        // NO-OP
     }
 
     @Override
     public void dataChanged(AbstractContainerMenu containerMenu, int dataSlotIndex, int value) {
-        this.updateWhitelistButtons();
-    }
-
-    public void setInitialValues(Collection<String> allowedValues, List<String> currentValues) {
-        this.allowedValues = allowedValues;
-        this.currentValues = currentValues;
-        this.rebuildListView(false);
-        this.editBox.setValue("");
+        this.updateButtons();
     }
 
     private void sendCurrentValues() {
-        MessageSender.broadcast(new ServerboundSetValuesMessage(this.menu.containerId, this.currentValues));
+        MessageSender.broadcast(new ServerboundSetValuesMessage(this.menu.containerId, this.menu.getCurrentValues()));
     }
 }

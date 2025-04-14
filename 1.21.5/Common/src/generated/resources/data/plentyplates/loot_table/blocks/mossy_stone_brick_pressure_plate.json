@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "plentyplates:chiseled_stone_bricks_pressure_plate"
+          "name": "plentyplates:mossy_stone_brick_pressure_plate"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "plentyplates:blocks/chiseled_stone_bricks_pressure_plate"
+  "random_sequence": "plentyplates:blocks/mossy_stone_brick_pressure_plate"
 }

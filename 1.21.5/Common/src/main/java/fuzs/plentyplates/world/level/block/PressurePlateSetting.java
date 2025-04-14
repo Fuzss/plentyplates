@@ -39,7 +39,9 @@ public enum PressurePlateSetting {
     static {
         int defaultSettings = 0;
         for (PressurePlateSetting setting : values()) {
-            if (setting.defaultValue) defaultSettings |= 1 << setting.ordinal();
+            if (setting.defaultValue) {
+                defaultSettings |= 1 << setting.ordinal();
+            }
         }
         DEFAULT_SETTINGS = defaultSettings;
     }

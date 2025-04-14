@@ -3,16 +3,14 @@ package fuzs.plentyplates.world.level.block;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
+import fuzs.plentyplates.world.inventory.PressurePlateMenu;
 import fuzs.plentyplates.world.level.block.entity.PressurePlateBlockEntity;
-import fuzs.puzzleslib.api.network.v4.MessageSender;
-import fuzs.puzzleslib.api.network.v4.PlayerSet;
 import fuzs.puzzleslib.api.util.v1.InteractionResultHelper;
 import fuzs.puzzleslib.api.util.v1.ShapesHelper;
+import fuzs.puzzleslib.impl.core.proxy.ProxyImpl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -62,7 +60,8 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     private static final Map<Direction, AABB> TOUCH_AABBS = ShapesHelper.rotate(Shapes.create(TOUCH_AABB))
             .entrySet()
             .stream()
-            .collect(Maps.toImmutableEnumMap(Map.Entry::getKey, entry -> entry.getValue().toAabbs().iterator().next()));
+            .collect(Maps.toImmutableEnumMap(Map.Entry::getKey,
+                    (Map.Entry<Direction, VoxelShape> entry) -> entry.getValue().toAabbs().iterator().next()));
 
     private final SensitivityMaterial sensitivityMaterial;
 
@@ -185,7 +184,7 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
     protected int getSignalStrength(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
         AABB aABB = TOUCH_AABBS.get(state.getValue(FACING)).move(pos);
-        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getClazz(),
+        List<? extends Entity> entities = level.getEntitiesOfClass(this.sensitivityMaterial.getEntityClass(),
                 aABB,
                 EntitySelector.NO_SPECTATORS.and(Predicate.not(Entity::isIgnoringBlockTriggers)).and(entity -> {
                     if (!level.isClientSide &&
@@ -246,11 +245,10 @@ public class DirectionalPressurePlateBlock extends PressurePlateBlock implements
         if (player.isSecondaryUseActive()) {
             if (!level.isClientSide && level.getBlockEntity(pos) instanceof PressurePlateBlockEntity blockEntity) {
                 if (blockEntity.allowedToAccess(player)) {
-                    player.openMenu(blockEntity).ifPresent(containerId -> {
-                        MessageSender.broadcast(PlayerSet.ofPlayer((ServerPlayer) player),
-                                new ClientboundInitialValuesMessage(containerId,
-                                        blockEntity.getAllowedValues(),
-                                        blockEntity.getCurrentValues()));
+                    ProxyImpl.get().openMenu(player, blockEntity, () -> {
+                        return new PressurePlateMenu.Data(this.sensitivityMaterial,
+                                blockEntity.getAllowedValues(),
+                                blockEntity.getCurrentValues());
                     });
                 }
             }

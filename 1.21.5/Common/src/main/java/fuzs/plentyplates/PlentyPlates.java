@@ -1,7 +1,6 @@
 package fuzs.plentyplates;
 
 import fuzs.plentyplates.init.ModRegistry;
-import fuzs.plentyplates.network.ClientboundInitialValuesMessage;
 import fuzs.plentyplates.network.client.ServerboundSetValuesMessage;
 import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import fuzs.puzzleslib.api.core.v1.context.PayloadTypesContext;
@@ -22,7 +21,6 @@ public class PlentyPlates implements ModConstructor {
 
     @Override
     public void onRegisterPayloadTypes(PayloadTypesContext context) {
-        context.playToClient(ClientboundInitialValuesMessage.class, ClientboundInitialValuesMessage.STREAM_CODEC);
         context.playToServer(ServerboundSetValuesMessage.class, ServerboundSetValuesMessage.STREAM_CODEC);
     }
 

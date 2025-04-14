@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "minecraft:chiseled_stone_bricks"
+    "#": "minecraft:stone_bricks"
   },
   "pattern": [
     "##"
   ],
   "result": {
     "count": 1,
-    "id": "plentyplates:chiseled_stone_bricks_pressure_plate"
+    "id": "plentyplates:stone_brick_pressure_plate"
   }
 }

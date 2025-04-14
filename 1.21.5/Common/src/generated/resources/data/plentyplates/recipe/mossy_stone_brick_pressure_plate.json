@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "#": "minecraft:stone_bricks"
+    "#": "minecraft:mossy_stone_bricks"
   },
   "pattern": [
     "##"
   ],
   "result": {
     "count": 1,
-    "id": "plentyplates:stone_bricks_pressure_plate"
+    "id": "plentyplates:mossy_stone_brick_pressure_plate"
   }
 }

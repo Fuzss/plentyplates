@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "plentyplates:mossy_stone_bricks_pressure_plate"
+        "recipe": "plentyplates:mossy_stone_brick_pressure_plate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "plentyplates:mossy_stone_bricks_pressure_plate"
+      "plentyplates:mossy_stone_brick_pressure_plate"
     ]
   }
 }

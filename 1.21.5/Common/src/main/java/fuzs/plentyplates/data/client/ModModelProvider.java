@@ -37,7 +37,7 @@ public class ModModelProvider extends AbstractModelProvider {
     @Override
     public void addBlockModels(BlockModelGenerators blockModelGenerators) {
         for (SensitivityMaterial material : SensitivityMaterial.values()) {
-            this.pressurePlate(material.getPressurePlateBlock(),
+            this.pressurePlate(material.getBlock(),
                     material.getTextureLocation(),
                     material.getTranslucentTextureLocation(),
                     blockModelGenerators);

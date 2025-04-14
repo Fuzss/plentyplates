@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "plentyplates:stone_bricks_pressure_plate"
+          "name": "plentyplates:stone_brick_pressure_plate"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "plentyplates:blocks/stone_bricks_pressure_plate"
+  "random_sequence": "plentyplates:blocks/stone_brick_pressure_plate"
 }
